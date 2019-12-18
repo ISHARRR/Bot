@@ -17,29 +17,13 @@ def data_described():
     # plt.show()
     print(data)
 
-def data_p_described():
-
-    # data_p.insert(0, 'New_ID', range(0 + len(data_p)))
-    #
-    print(data_p.describe())
-    # print(data_p)
-    # data_p.set_index('count', inplace=True)
-    # print(data_p.loc[['Global Quote'], ['02. open', '09. change',]])
-
-    open = float(data_p['02. open']['Global Quote'])
-    change = float(data_p['09. change']['Global Quote'])
-
-    # print(open)
-    # print(chnage)
-
-    price = open + change
-    #
-    # print('Price = ' + price.to_string(index=False))
-    #
+def stock_price():
+    price = float(data_p['05. price']['Global Quote'])
     print('Price = ' + str((price)))
 
+
 data_described()
-data_p_described()
+stock_price()
 
 # data.plot()
 # plt.title('Intraday Times Series for the MSFT stock (1 min)')

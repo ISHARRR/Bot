@@ -1,0 +1,6 @@
+
+getting the current price without looking at the jason output
+
+open = float(data_p['02. open']['Global Quote'])
+change = float(data_p['09. change']['Global Quote'])
+price = open + change
