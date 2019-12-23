@@ -1,6 +1,47 @@
 
-getting the current price without looking at the jason output
+-------------- getting the current price without looking at the jason output
 
 open = float(data_p['02. open']['Global Quote'])
 change = float(data_p['09. change']['Global Quote'])
 price = open + change
+
+-------------- testing results
+
+def stock_price():
+    price = float(data_p['05. price'])
+    print('Price = ' + str((price)))
+
+def sma():
+    # getting todays date for the dataframe
+    date = datetime.today().strftime('%Y-%m-%d')
+    # passing the date into the 'at' search
+    sma = data_sma.at[date, 'SMA']
+    # getting the most current value aka the tail
+    current_sma = sma[-1]
+    print('SMA = ' + str(current_sma))
+
+def rsi():
+    # getting todays date for the dataframe
+    date = datetime.today().strftime('%Y-%m-%d')
+    # passing the date into the 'at' search
+    rsi = data_rsi.at['date', 'RSI']
+    # getting the most current value aka the tail
+    current_rsi = rsi[-1]
+    print('RSI = ' + str(current_rsi))
+
+def bb():
+    # getting todays date for the dataframe
+    date = datetime.today().strftime('%Y-%m-%d')
+    # passing the date into the 'at' search
+    upper_bb = data_bb.at[date, 'Real Upper Band']
+    middle_bb = data_bb.at[date, 'Real Middle Band']
+    lower_bb = data_bb.at[date, 'Real Lower Band']
+    # getting the most current value aka the first element of each bb
+    current_upper_bb = upper_bb[0]
+    current_middle_bb = middle_bb[0]
+    current_lower_bb = lower_bb[0]
+    print(
+        'Upper BB = ' + str(current_upper_bb) + '\n' +
+        'middle BB = ' + str(current_middle_bb) + '\n' +
+        'lower BB = ' + str(current_lower_bb)
+        )

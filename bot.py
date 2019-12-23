@@ -10,32 +10,35 @@ ts = TimeSeries(key='E47X6GN73CIDKMOW', output_format='pandas')
 # variable for indicator
 ti = TechIndicators(key='FO8NGR3KQW03M9K2', output_format='pandas')
 # data1, meta_data1 = ts.get_intraday(symbol='MSFT',interval='1min', outputsize='full')
-data_p, meta_data_p = ts.get_quote_endpoint(symbol='AAPL')
-data_sma, meta_data_sma = ti.get_sma(symbol='AAPL', interval='1min', time_period=60)
-data_rsi, meta_data_rsi = ti.get_rsi(symbol='AAPL', interval='1min', time_period=60)
-data_bb, meta_data_bb = ti.get_bbands(symbol='AAPL', interval='1min', time_period=60)
+data_p, meta_data_p = ts.get_quote_endpoint(symbol='MSFT')
+data_sma, meta_data_sma = ti.get_sma(symbol='MSFT', interval='weekly', time_period=60)
+data_rsi, meta_data_rsi = ti.get_rsi(symbol='MSFT', interval='weekly', time_period=60)
+data_bb, meta_data_bb = ti.get_bbands(symbol='MSFT', interval='weekly', time_period=60)
 
 def stock_price():
     price = float(data_p['05. price'])
-    print('Price = ' + str((price)))
+    # print('Price = ' + str((price)))
+    return float(price)
 
 def sma():
     # getting todays date for the dataframe
     date = datetime.today().strftime('%Y-%m-%d')
     # passing the date into the 'at' search
-    sma = data_sma.at[date, 'SMA']
+    sma = data_sma.at['2019-03-15', 'SMA']
     # getting the most current value aka the tail
-    current_sma = sma[-1]
-    print('SMA = ' + str(current_sma))
+    current_sma = float(sma)
+    # print('SMA = ' + str(current_sma))
+    return (current_sma)
 
 def rsi():
     # getting todays date for the dataframe
     date = datetime.today().strftime('%Y-%m-%d')
     # passing the date into the 'at' search
-    rsi = data_rsi.at['date', 'RSI']
+    rsi = data_rsi.at['2019-03-15', 'RSI']
     # getting the most current value aka the tail
-    current_rsi = rsi[-1]
-    print('RSI = ' + str(current_rsi))
+    current_rsi = float(rsi)
+    # print('RSI = ' + str(current_rsi))
+    return (current_rsi)
 
 def bb():
     # getting todays date for the dataframe
@@ -48,18 +51,33 @@ def bb():
     current_upper_bb = upper_bb[0]
     current_middle_bb = middle_bb[0]
     current_lower_bb = lower_bb[0]
-    print(
-        'Upper BB = ' + str(current_upper_bb) + '\n' +
-        'middle BB = ' + str(current_middle_bb) + '\n' +
-        'lower BB = ' + str(current_lower_bb)
-        )
-    # print(data_bb)
+    # print(
+    #     'Upper BB = ' + str(current_upper_bb) + '\n' +
+    #     'middle BB = ' + str(current_middle_bb) + '\n' +
+    #     'lower BB = ' + str(current_lower_bb)
+    #     )
+    return current_lower_bb, current_middle_bb, current_upper_bb
+
+def stock_price_vs_sma_rsi():
+    if(rsi() <= 60):
+        print (stock_price())
+        print (sma())
+        print(rsi())
+        print ('buy')
+    else:
+        print (stock_price())
+        print (sma())
+        print(rsi())
+        print ('dont buy')
 
 
-stock_price()
+
+
+stock_price_vs_sma_rsi()
+# stock_price()
 sma()
 rsi()
-bb()
+# bb()
 
 
 
