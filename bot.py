@@ -1,83 +1,80 @@
 from alpha_vantage.techindicators import TechIndicators
 from alpha_vantage.timeseries import TimeSeries
+from datetime import datetime
+from email.message import EmailMessage
+
+
 import matplotlib
 import matplotlib.pyplot as plt
 import os
-from datetime import datetime
+import time
+import smtplib
+
 
 # variable for timeseries
 ts = TimeSeries(key='E47X6GN73CIDKMOW', output_format='pandas')
 # variable for indicator
 ti = TechIndicators(key='FO8NGR3KQW03M9K2', output_format='pandas')
-# data1, meta_data1 = ts.get_intraday(symbol='MSFT',interval='1min', outputsize='full')
-data_p, meta_data_p = ts.get_quote_endpoint(symbol='MSFT')
-data_sma, meta_data_sma = ti.get_sma(symbol='MSFT', interval='weekly', time_period=60)
-data_rsi, meta_data_rsi = ti.get_rsi(symbol='MSFT', interval='weekly', time_period=60)
-data_bb, meta_data_bb = ti.get_bbands(symbol='MSFT', interval='weekly', time_period=60)
 
-def stock_price():
-    price = float(data_p['05. price'])
-    # print('Price = ' + str((price)))
-    return float(price)
+# --------- data structure
 
-def sma():
+# ema
+data_ema5, meta_data_ema = ti.get_ema(symbol='USDEUR', interval='30min', time_period=5)
+data_ema15, meta_data_ema = ti.get_ema(symbol='USDEUR', interval='30min', time_period=15)
+
+def ema():
     # getting todays date for the dataframe
     date = datetime.today().strftime('%Y-%m-%d')
     # passing the date into the 'at' search
-    sma = data_sma.at['2019-03-15', 'SMA']
+    ema5 = data_ema5.at[date, 'EMA']
+    ema15 = data_ema15.at[date, 'EMA']
     # getting the most current value aka the tail
-    current_sma = float(sma)
-    # print('SMA = ' + str(current_sma))
-    return (current_sma)
+    current_ema5 = ema5[0]
+    current_ema15 = ema15[0]
+    previous_ema5 = ema5[1]
+    previous_ema15 = ema15[1]
+    return current_ema5, current_ema15, previous_ema5, previous_ema15
 
-def rsi():
-    # getting todays date for the dataframe
-    date = datetime.today().strftime('%Y-%m-%d')
-    # passing the date into the 'at' search
-    rsi = data_rsi.at['2019-03-15', 'RSI']
-    # getting the most current value aka the tail
-    current_rsi = float(rsi)
-    # print('RSI = ' + str(current_rsi))
-    return (current_rsi)
+    # -------------------------- tests
+    # data_ema5.plot()
+    # data_ema15.plot()
+    # plt.show()
+    # print('EMA = ' + str(current_ema5))
+    # print('EMA = ' + str(current_ema15))
+    # print('EMA p = ' + str(previous_ema5))
+    # print('EMA p = ' + str(previous_ema15))
 
-def bb():
-    # getting todays date for the dataframe
-    date = datetime.today().strftime('%Y-%m-%d')
-    # passing the date into the 'at' search
-    upper_bb = data_bb.at[date, 'Real Upper Band']
-    middle_bb = data_bb.at[date, 'Real Middle Band']
-    lower_bb = data_bb.at[date, 'Real Lower Band']
-    # getting the most current value aka the first element of each bb
-    current_upper_bb = upper_bb[0]
-    current_middle_bb = middle_bb[0]
-    current_lower_bb = lower_bb[0]
-    # print(
-    #     'Upper BB = ' + str(current_upper_bb) + '\n' +
-    #     'middle BB = ' + str(current_middle_bb) + '\n' +
-    #     'lower BB = ' + str(current_lower_bb)
-    #     )
-    return current_lower_bb, current_middle_bb, current_upper_bb
+def main():
 
-def stock_price_vs_sma_rsi():
-    if(rsi() <= 60):
-        print (stock_price())
-        print (sma())
-        print(rsi())
-        print ('buy')
-    else:
-        print (stock_price())
-        print (sma())
-        print(rsi())
-        print ('dont buy')
+    while True:
+        ema5, ema15, prv5, prv15 = ema()
+        if (ema5 <= ema15) & (prv5 >= prv15): # BUY
+            msg = EmailMessage()
+            msg['Subject'] = 'BUY'
+            msg['From'] = 'isharreehal8@gmail.com'
+            msg['To'] = 'isharreehal8@gmail.com'
+            msg.set_content('CHECK OVERALL TREND')
 
+            with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                smtp.login('isharreehal8@gmail.com', 'znftewujyvxesikm')
 
+                smtp.send_message(msg)
 
+        if (ema5 >= ema15) & (prv5 <= prv15): # SELL
+            msg = EmailMessage()
+            msg['Subject'] = 'SELL'
+            msg['From'] = 'isharreehal8@gmail.com'
+            msg['To'] = 'isharreehal8@gmail.com'
+            msg.set_content('CHECK OVERALL TREND')
 
-stock_price_vs_sma_rsi()
-# stock_price()
-sma()
-rsi()
-# bb()
+            with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                smtp.login('isharreehal8@gmail.com', 'znftewujyvxesikm')
+
+                smtp.send_message(msg)
+
+        time.sleep(30)
+
+main()
 
 
 
@@ -86,19 +83,4 @@ rsi()
 
 
 
-
-
-
-
-
-
-
-# data.plot()
-# plt.title('Intraday Times Series for the MSFT stock (1 min)')
-# plt.show()
-# plt.title('BBbands indicator for  MSFT stock (60 min)')
-# plt.show()
-
-
-# API key is: E47X6GN73CIDKMOW
-# API key is: FO8NGR3KQW03M9K2
+# main()
