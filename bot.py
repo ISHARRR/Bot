@@ -31,14 +31,14 @@ def ema():
     previous_ema5 = data_ema5['EMA'].iloc[-2]
     previous_ema15 = data_ema15['EMA'].iloc[-2]
 
-    # return current_ema5, current_ema15, previous_ema5, previous_ema15
+    return current_ema5, current_ema15, previous_ema5, previous_ema15
 
     # -------------------------- tests
     # data_ema['4. close'].plot()
     # data_ema15.plot()
-    plt.plot(data_ema5, 'b')
-    plt.plot(data_ema15, 'r')
-    plt.show()
+    # plt.plot(data_ema5, 'b')
+    # plt.plot(data_ema15, 'r')
+    # plt.show()
 
     # print('EMA = ' + str(current_ema5))
     # print('EMA = ' + str(current_ema15))
@@ -51,34 +51,31 @@ def main():
         ema5, ema15, prv5, prv15 = ema()
         print ('5 =', ema5, '15 =', ema15, 'p5 =', prv5, 'p15 =', prv15)
         if (ema5 <= ema15) and (prv5 >= prv15): # BUY
-            print('BUY')
-            # msg = EmailMessage()
-            # msg['Subject'] = 'BUY'
-            # msg['From'] = 'isharreehal8@gmail.com'
-            # msg['To'] = 'isharreehal8@gmail.com'
-            # msg.set_content('CHECK OVERALL TREND')
-            #
-            # with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-            #     smtp.login('isharreehal8@gmail.com', 'znftewujyvxesikm')
-            #
-            #     smtp.send_message(msg)
+            # print('BUY')
+            msg = EmailMessage()
+            msg['Subject'] = 'BUY'
+            msg['From'] = 'isharreehal8@gmail.com'
+            msg['To'] = 'isharreehal8@gmail.com'
+            msg.set_content('CHECK OVERALL TREND')
+
+            with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                smtp.login('isharreehal8@gmail.com', 'znftewujyvxesikm')
+
+                smtp.send_message(msg)
 
         if (ema5 >= ema15) and (prv5 <= prv15): # SELL
-            print('SELL')
-            # msg = EmailMessage()
-            # msg['Subject'] = 'SELL'
-            # msg['From'] = 'isharreehal8@gmail.com'
-            # msg['To'] = 'isharreehal8@gmail.com'
-            # msg.set_content('CHECK OVERALL TREND')
-            #
-            # with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
-            #     smtp.login('isharreehal8@gmail.com', 'znftewujyvxesikm')
-            #
-            #     smtp.send_message(msg)
+            # print('SELL')
+            msg = EmailMessage()
+            msg['Subject'] = 'SELL'
+            msg['From'] = 'isharreehal8@gmail.com'
+            msg['To'] = 'isharreehal8@gmail.com'
+            msg.set_content('CHECK OVERALL TREND')
+
+            with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+                smtp.login('isharreehal8@gmail.com', 'znftewujyvxesikm')
+
+                smtp.send_message(msg)
 
         time.sleep(30)
 
-# main()
-
-
-ema()
+main()
