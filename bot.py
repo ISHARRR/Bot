@@ -51,13 +51,13 @@ def ema(stock_symbol, api_key):
     return current_ema5, current_ema15, previous_ema5, previous_ema15
 
 def trade(stock_symbol, api_key):
-    current_ema5, current_ema15, previous_ema5, previous_ema15 = ema(stock_symbol, api_key)
-
     print(stock_symbol, 'Running...')
 
     while True:
+        current_ema5, current_ema15, previous_ema5, previous_ema15 = ema(stock_symbol, api_key)
+        
         ny_time = timezone()
-        # print (stock_symbol, ': ','5 =', current_ema5, '15 =', current_ema15, 'p5 =', previous_ema5, 'p15 =', previous_ema15, '  Time:', ny_time)
+        print (stock_symbol, ': ','5 =', current_ema5, '15 =', current_ema15, 'p5 =', previous_ema5, 'p15 =', previous_ema15, '  Time:', ny_time)
 
         if (current_ema5 > current_ema15) and (previous_ema5 < previous_ema15): # BUY
             print (stock_symbol, ': ','5 =', current_ema5, '15 =', current_ema15, 'p5 =', previous_ema5, 'p15 =', previous_ema15, '  Time:', ny_time)
