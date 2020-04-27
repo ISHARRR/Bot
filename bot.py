@@ -16,6 +16,7 @@ def timezone():
     datetime_NY = datetime.now(ny_timezone)
     return (datetime_NY.strftime("%H:%M:%S"))
 
+
 def email(buyorsell, stock_symbol):
     recipients = ['isharreehal8@gmail.com',
                   'rehmatk08@gmail.com',
@@ -32,6 +33,7 @@ def email(buyorsell, stock_symbol):
 
         smtp.send_message(msg)
 
+
 def ema(stock_symbol, api_key):
     # variable for indicator
     ti = TechIndicators(key = api_key, output_format='pandas')
@@ -43,8 +45,13 @@ def ema(stock_symbol, api_key):
     current_ema5 = data_ema5['EMA'].iloc[-1]
     current_ema15 = data_ema15['EMA'].iloc[-1]
     # getting the second most current value aka the n-1
-    previous_ema5 = data_ema5['EMA'].iloc[-370]
-    previous_ema15 = data_ema15['EMA'].iloc[-370]
+    previous_ema5 = data_ema5['EMA'].iloc[-31]
+    previous_ema15 = data_ema15['EMA'].iloc[-31]
+
+    return current_ema5, current_ema15, previous_ema5, previous_ema15
+
+def trade(stock_symbol, api_key):
+    current_ema5, current_ema15, previous_ema5, previous_ema15 = ema(stock_symbol, api_key)
 
     print(stock_symbol, 'Running...')
 

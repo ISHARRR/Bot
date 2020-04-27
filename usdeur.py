@@ -1,3 +1,3 @@
 import bot
 
-bot.ema('USDEUR', '4OKNDHHTQH2CFWZ9')
+bot.trade('USDEUR', '4OKNDHHTQH2CFWZ9')

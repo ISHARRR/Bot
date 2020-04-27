@@ -1,4 +1,3 @@
 import bot
 
-bot.ema('TSLA', 'ARA2JDHJFGRI89VB')
-    
+bot.trade('TSLA', 'ARA2JDHJFGRI89VB')

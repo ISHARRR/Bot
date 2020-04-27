@@ -1,6 +1,6 @@
 import bot
 
-bot.ema('USDGBP', 'T7NT8GKR7CJ36U3C')
-    
+bot.trade('USDGBP', 'T7NT8GKR7CJ36U3C')
+
 
 #F34FEQKDQI3J2AKI
