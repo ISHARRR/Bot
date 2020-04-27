@@ -28,27 +28,21 @@ def ema(stock_symbol, api_key):
     current_ema5 = data_ema5['EMA'].iloc[-1]
     current_ema15 = data_ema15['EMA'].iloc[-1]
     # getting the second most current value aka the n-1
-    previous_ema5 = data_ema5['EMA'].iloc[-31]
-    previous_ema15 = data_ema15['EMA'].iloc[-31]
+    previous_ema5 = data_ema5['EMA'].iloc[-330]
+    previous_ema15 = data_ema15['EMA'].iloc[-330]
     
     print(stock_symbol, 'Running...')
 
     while True:
         ny_time = timezone()
-        # print (stock_symbol, ': ','5 =', current_ema5, '15 =', current_ema15, 'p5 =', previous_ema5, 'p15 =', previous_ema15, '  Time:', ny_time)
-
-        recipients = ['isharreehal8@gmail.com',
-                      'rehmatk08@gmail.com',
-                     ]
-                
-
-        if (current_ema5 > current_ema15) and (previous_ema5 < previous_ema15): # BUY
+        
+        if (current_ema5 < current_ema15) and (previous_ema5 > previous_ema15): # BUY
             print (stock_symbol, ': ','5 =', current_ema5, '15 =', current_ema15, 'p5 =', previous_ema5, 'p15 =', previous_ema15, '  Time:', ny_time)
             print('BUY:', stock_symbol, '- Time:', ny_time )
             msg = EmailMessage()
             msg['Subject'] = 'BUY: ' + stock_symbol
             msg['From'] = 'isharreehal8@gmail.com'
-            msg['To'] = ", ".join(recipients)
+            msg['To'] = 'isharreehal8@gmail.com'
             msg.set_content('CHECK OVERALL TREND')
 
             with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
@@ -56,13 +50,13 @@ def ema(stock_symbol, api_key):
 
                 smtp.send_message(msg)
 
-        if (current_ema5 < current_ema15) and (previous_ema5 > previous_ema15): # SELL
+        if (current_ema5 > current_ema15) and (previous_ema5 < previous_ema15): # SELL
             print (stock_symbol, ': ','5 =', current_ema5, '15 =', current_ema15, 'p5 =', previous_ema5, 'p15 =', previous_ema15, '  Time:', ny_time)
             print('SELL:', stock_symbol, ' - Time:', ny_time )
             msg = EmailMessage()
             msg['Subject'] = 'SELL: ' + stock_symbol
             msg['From'] = 'isharreehal8@gmail.com'
-            msg['To'] = ", ".join(recipients)
+            msg['To'] = 'isharreehal8@gmail.com'
             msg.set_content('CHECK OVERALL TREND')
 
             with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
@@ -73,6 +67,11 @@ def ema(stock_symbol, api_key):
         time.sleep(300)
 
 
+
+ 
+
+    
+    
 
  
 
