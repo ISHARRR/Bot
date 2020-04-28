@@ -10,12 +10,16 @@ import os
 import time
 import smtplib
 import pytz
+import random
 
 def timezone():
     ny_timezone = pytz.timezone('America/New_york')
-    datetime_NY = datetime.now(ny_timezone)
-    return (datetime_NY.strftime("%H:%M:%S"))
-
+    datetime_NY = datetime.now(ny_timezone).strftime("%H:%M:%S")
+    
+    uk_timezone = pytz.timezone('Europe/London')
+    datetime_UK = datetime.now(uk_timezone).strftime("%H:%M:%S")
+    
+    return datetime_NY, datetime_UK
 
 def email(buyorsell, stock_symbol):
     recipients = ['isharreehal8@gmail.com',
@@ -45,28 +49,34 @@ def ema(stock_symbol, api_key):
     current_ema5 = data_ema5['EMA'].iloc[-1]
     current_ema15 = data_ema15['EMA'].iloc[-1]
     # getting the second most current value aka the n-1
-    previous_ema5 = data_ema5['EMA'].iloc[-31]
-    previous_ema15 = data_ema15['EMA'].iloc[-31]
+    previous_ema5 = data_ema5['EMA'].iloc[-15]
+    previous_ema15 = data_ema15['EMA'].iloc[-15]
 
     return current_ema5, current_ema15, previous_ema5, previous_ema15
 
 def trade(stock_symbol, api_key):
     print(stock_symbol, 'Running...')
-
+    
     while True:
-        current_ema5, current_ema15, previous_ema5, previous_ema15 = ema(stock_symbol, api_key)
+        ny_time, uk_time = timezone()
         
-        ny_time = timezone()
-        print (stock_symbol, ': ','5 =', current_ema5, '15 =', current_ema15, 'p5 =', previous_ema5, 'p15 =', previous_ema15, '  Time:', ny_time)
+        try:
+            current_ema5, current_ema15, previous_ema5, previous_ema15 = ema(stock_symbol, api_key)
+        
+        #print (stock_symbol, ': ','5 =', current_ema5, '15 =', current_ema15, 'p5 =', previous_ema5, 'p15 =', previous_ema15,
+        #        '\n','NY Time :', ny_time, '\n', 'UK Time :', uk_time)
 
-        if (current_ema5 > current_ema15) and (previous_ema5 < previous_ema15): # BUY
-            print (stock_symbol, ': ','5 =', current_ema5, '15 =', current_ema15, 'p5 =', previous_ema5, 'p15 =', previous_ema15, '  Time:', ny_time)
-            print('BUY:', stock_symbol, '- Time:', ny_time )
-            email('BUY', stock_symbol)
+            if (current_ema5 > current_ema15) and (previous_ema5 < previous_ema15): # BUY
+                print('BUY:', stock_symbol, '  - NY Time :', ny_time, '  - UK Time :', uk_time)
+                email('BUY', stock_symbol)
 
-        if (current_ema5 < current_ema15) and (previous_ema5 > previous_ema15): # SELL
-            print (stock_symbol, ': ','5 =', current_ema5, '15 =', current_ema15, 'p5 =', previous_ema5, 'p15 =', previous_ema15, '  Time:', ny_time)
-            print('SELL:', stock_symbol, ' - Time:', ny_time )
-            email('SELL', stock_symbol)
+            if (current_ema5 < current_ema15) and (previous_ema5 > previous_ema15): # SELL
+                print('SELL:', stock_symbol, '  - NY Time :', ny_time, '  - UK Time :', uk_time)
+                email('SELL', stock_symbol)
+        except:
+            print ('EXCEPTION ERROR' + ' Time:', ny_time)
+            time.sleep(random.randint(30, 150))
+ 
+            
 
         time.sleep(300)
