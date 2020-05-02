@@ -3,6 +3,7 @@ from alpha_vantage.timeseries import TimeSeries
 from datetime import datetime
 from email.message import EmailMessage
 from threading import Thread
+from XTBApi.api import Client
 
 import matplotlib
 import os
@@ -11,6 +12,7 @@ import smtplib
 import pytz
 import random
 import recipients
+import xAPIConnector
 
 
 def timezone(zone):
@@ -98,6 +100,8 @@ def trade(stock_symbol, api_key):
             time.sleep(random.randint(30, 150))
 
         time.sleep(300)
+
+xtb()
 
 # ema('USDEUR', '4OKNDHHTQH2CFWZ9')
 # ema('USDGBP', 'T7NT8GKR7CJ36U3C')
