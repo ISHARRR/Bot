@@ -3,7 +3,6 @@ from alpha_vantage.timeseries import TimeSeries
 from datetime import datetime
 from email.message import EmailMessage
 from threading import Thread
-from XTBApi.api import Client
 
 import matplotlib
 import os
@@ -12,7 +11,6 @@ import smtplib
 import pytz
 import random
 import recipients
-import xAPIConnector
 
 
 def timezone(zone):
@@ -85,23 +83,21 @@ def trade(stock_symbol, api_key):
             current_sma100, current_sma200 = sma(stock_symbol, api_key)
             current_ema5, current_ema15, previous_ema5, previous_ema15 = ema(stock_symbol, api_key)
 
-            if ( (current_ema5 < current_ema15) and (previous_ema5 > previous_ema15) and (current_sma100 > current_sma200) ): # BUY
+            if ( (current_ema5 > current_ema15) and (previous_ema5 < previous_ema15) and (current_sma100 > current_sma200) ): # BUY
                 print('BUY:', stock_symbol, time_msg)
                 email('BUY', stock_symbol)
-                time.sleep(1200)
+                time.sleep(900)
 
-            if ( (current_ema5 > current_ema15) and (previous_ema5 < previous_ema15) and (current_sma100 < current_sma200) ): # SELL
+            if ( (current_ema5 < current_ema15) and (previous_ema5 > previous_ema15) and (current_sma100 < current_sma200) ): # SELL
                 print('SELL:', stock_symbol, time_msg)
                 email('SELL', stock_symbol)
-                time.sleep(1200)
+                time.sleep(900)
 
         except:
             print ('EXCEPTION ERROR', time_msg)
             time.sleep(random.randint(30, 150))
 
-        time.sleep(300)
-
-xtb()
+        time.sleep(600)
 
 # ema('USDEUR', '4OKNDHHTQH2CFWZ9')
 # ema('USDGBP', 'T7NT8GKR7CJ36U3C')

@@ -1,0 +1,6 @@
+import bot
+
+bot.trade('GBPUSD', 'T7NT8GKR7CJ36U3C')
+
+
+#F34FEQKDQI3J2AKI

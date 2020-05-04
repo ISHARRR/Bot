@@ -1,4 +1,4 @@
-#!/Users/ishar/Documents/Trading/Bot/env/bin/python3
+#!/Users/ishar/Documents/Trading/Bot/env/bin/python3.8
 
 import argparse
 import code

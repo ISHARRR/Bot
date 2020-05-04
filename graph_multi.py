@@ -29,7 +29,6 @@ def ema_graph(stock_symbol, api_key):
     plt.plot(data_ema15, 'r')
     plt.plot(data_sma100, 'g')
     plt.plot(data_sma200, 'b')
-    plt.gca().invert_yaxis()
     plt.title(stock_symbol)
     plt.show()
 
@@ -37,11 +36,11 @@ def main():
     # 1
     # ema_graph('SPX', 'F34FEQKDQI3J2AKI')
     # 2
-    ema_graph('USDEUR', 'E47X6GN73CIDKMOW')
+    ema_graph('EURUSD', 'E47X6GN73CIDKMOW')
     # 3
-    #ema_graph('USDGBP', 'ARA2JDHJFGRI89VB')
+    #ema_graph('GBPUSD', 'ARA2JDHJFGRI89VB')
     # 4
-    #ema_graph('TSLA', '60I75BKCK0OFGNKA')
+    #ema_graph('GBPJPY', '60I75BKCK0OFGNKA')
     # 5
 
 main()
