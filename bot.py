@@ -58,13 +58,14 @@ def sma(stock_symbol, api_key):
     # variable for indicator
     ti = TechIndicators(key = api_key, output_format='pandas')
     # sma
-    data_sma100, meta_data_ema = ti.get_sma(symbol = stock_symbol, series_type = 'close', interval='1min', time_period=3000)
+    # data_sma100, meta_data_ema = ti.get_sma(symbol = stock_symbol, series_type = 'close', interval='1min', time_period=3000)
     data_sma200, meta_data_ema = ti.get_sma(symbol= stock_symbol, series_type = 'close', interval='1min', time_period=6000)
     # getting the most current value aka the n (tail)
-    current_sma100 = data_sma100['SMA'].iloc[-1]
+    # current_sma100 = data_sma100['SMA'].iloc[-1]
     current_sma200 = data_sma200['SMA'].iloc[-1]
 
-    return current_sma100, current_sma200
+    # return current_sma100, current_sma200
+    return current_sma200
 
 
 def trade(stock_symbol, api_key):
@@ -80,15 +81,16 @@ def trade(stock_symbol, api_key):
         time_msg = '- ' + 'NY-Time:' + '(' + ny_time +') ' + '| UK-Time:' + '(' + uk_time +')'
 
         try:
-            current_sma100, current_sma200 = sma(stock_symbol, api_key)
+            current_sma200 = sma(stock_symbol, api_key)
+            # current_sma100, current_sma200 = sma(stock_symbol, api_key)
             current_ema5, current_ema15, previous_ema5, previous_ema15 = ema(stock_symbol, api_key)
 
-            if ( (current_ema5 > current_ema15) and (previous_ema5 < previous_ema15) and (current_sma100 > current_sma200) ): # BUY
+            if ((current_ema5 > current_ema15) and (previous_ema5 < previous_ema15) and (current_ema15 > current_sma200)): # BUY
                 print('BUY:', stock_symbol, time_msg)
                 email('BUY', stock_symbol)
                 time.sleep(900)
 
-            if ( (current_ema5 < current_ema15) and (previous_ema5 > previous_ema15) and (current_sma100 < current_sma200) ): # SELL
+            if ((current_ema5 < current_ema15) and (previous_ema5 > previous_ema15) and (current_ema15 < current_sma200)): # SELL
                 print('SELL:', stock_symbol, time_msg)
                 email('SELL', stock_symbol)
                 time.sleep(900)
