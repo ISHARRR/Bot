@@ -170,4 +170,4 @@ def create_order(instrument, risk_percentage, buyorsell):
 # print(risk_management('EUR_USD', 0.1, 2, 1, 1, 'SELL'))
 # print(get_current_price('EUR_USD'))
 # print(get_current_price('GBP_USD'))
-create_order('EUR_USD', 0.1, 'BUY')
+# create_order('EUR_USD', 0.1, 'BUY')
