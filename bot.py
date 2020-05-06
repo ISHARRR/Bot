@@ -87,11 +87,13 @@ def trade(stock_symbol, api_key):
             if ((current_ema5 > current_ema15) and (previous_ema5 < previous_ema15) and (current_ema15 > current_sma200)): # BUY
                 print('BUY:', stock_symbol, time_msg)
                 email('BUY', stock_symbol)
+                create_order(stock_symbol, 0.1, 'BUY')
                 time.sleep(900)
 
             if ((current_ema5 < current_ema15) and (previous_ema5 > previous_ema15) and (current_ema15 < current_sma200)): # SELL
                 print('SELL:', stock_symbol, time_msg)
                 email('SELL', stock_symbol)
+                create_order(stock_symbol, 0.1, 'SELL')
                 time.sleep(900)
 
         except:
