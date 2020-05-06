@@ -40,14 +40,22 @@ response = DataFrame.from_dict(r.response)
 def get_balance():
     return (response.loc['balance' , 'account'])
 
+
+def get_pl():
+    return (response.loc['pl' , 'account'])
+
+
 def get_margin_available():
     return (response.loc['marginAvailable' , 'account'])
+
 
 def get_commission():
     return (response.loc['commission' , 'account'])
 
+
 def get_open_trade_count():
     return (response.loc['openTradeCount' , 'account'])
+
 
 def get_current_price(instrument):
     # passing arguments
@@ -60,24 +68,76 @@ def get_current_price(instrument):
     df = DataFrame.from_dict(res, orient='columns')
     df = df.loc[0, 'closeoutBid']
     # returing the current price ask to 4 decimal places
-    return ("{:.{}f}".format(float(df), 4))
+    return float("{:.{}f}".format(float(df), 4))
 
 
-def create_order(instrument):
-    # current price
+def unit_amount(instrument, risk_percentage, buyorsell):
     current_price = get_current_price(instrument)
-    # self explanitpry
-    STOP_LOSS = float(current_price) - 0.0050
-    TAKE_PROFIT = float(current_price) + 0.0050
-    TRAILING_STOP_LOSS = TrailingStopLossDetails(distance=0.0050)
+    leverage = 30
+    balance = get_balance()
+    risk_percentage = risk_percentage
+
+    unit_size = (float(balance) * float(leverage)) * float(risk_percentage)
+    unit_amount = float(unit_size) * float(current_price)
+
+    if buyorsell == 'SELL':
+        unit_amount = unit_amount * - 1
+    elif buyorsell == 'BUY':
+        unit_amount = unit_amount
+    else:
+        raise ValueError('Please enter BUY or SELL')
+
+    return float((round(unit_amount)))
+
+
+def pip_value(instrument, risk_percentage, buyorsell):
+    CURRENT_PRICE = get_current_price(instrument)
+    UNIT_AMOUNT = unit_amount(instrument, risk_percentage, buyorsell)
+    pip = float(0.0001)
+
+    pip_value = (pip/CURRENT_PRICE) * UNIT_AMOUNT
+    return round(pip_value, 2)
+
+
+def risk_management(instrument, risk_percentage, profit_ratio,loss_ratio, trailing_ratio, buyorsell):
+    UNIT_AMOUNT = unit_amount(instrument, risk_percentage, buyorsell)
+    PIP_VALUE = pip_value(instrument, risk_percentage, buyorsell)
+    CURRENT_PRICE = get_current_price(instrument)
+    pip = 0.0001
+
+    if buyorsell == 'BUY':
+        pip_gain = float(((risk_percentage * 100)/PIP_VALUE) * profit_ratio)
+        pip_loss = (float(((risk_percentage * 100)/PIP_VALUE) * loss_ratio)) * -1
+        pip_trailing = (float(((risk_percentage * 100)/PIP_VALUE) * trailing_ratio))
+    elif buyorsell == 'SELL':
+        pip_gain = float(((risk_percentage * 100)/PIP_VALUE) * profit_ratio)
+        pip_loss = abs((float(((risk_percentage * 100)/PIP_VALUE) * loss_ratio)))
+        pip_trailing = abs((float(((risk_percentage * 100)/PIP_VALUE) * trailing_ratio)))
+
+    take_profit = round((pip_gain * pip), 4)
+    stop_loss = round((pip_loss * pip), 4)
+    trailing_stop = round((pip_trailing * pip), 4)
+
+    take_profit_price = CURRENT_PRICE + take_profit
+    stop_loss_price = CURRENT_PRICE + stop_loss
+    # trailing stop is distnace therefore always positive
+    trailing_stop_distance = trailing_stop
+
+    return take_profit_price, stop_loss_price, trailing_stop_distance
+
+
+def create_order(instrument, risk_percentage, buyorsell):
+    UNIT_AMOUNT = unit_amount(instrument, risk_percentage, buyorsell)
+    # sets take profit and trailing stop loss
+    TAKE_PROFIT_PRICE, STOP_LOSS_PRICE, TRAILING_STOP_DISTANCE = risk_management(instrument, 0.1, 2, 1, 1, buyorsell)
 
     # The orderspecs
     mktOrder = MarketOrderRequest(
         instrument = instrument,
-        units=1000,
-        takeProfitOnFill=TakeProfitDetails(price=TAKE_PROFIT).data,
-        stopLossOnFill=StopLossDetails(price=STOP_LOSS).data,
-        trailingStopLossOnFill=TRAILING_STOP_LOSS.data
+        units = UNIT_AMOUNT,
+        takeProfitOnFill=TakeProfitDetails(price=TAKE_PROFIT_PRICE).data,
+        # stopLossOnFill=StopLossDetails(price=STOP_LOSS).data,
+        trailingStopLossOnFill=TrailingStopLossDetails(distance=TRAILING_STOP_DISTANCE).data
     )
 
     # print("Market Order specs: \n{}".format(json.dumps(mktOrder.data, indent=4)))
@@ -107,4 +167,7 @@ def create_order(instrument):
             print('Order status:', status +'\n'+ 'Trade ID:', id)
 
 
-create_order('EUR_USD')
+# print(risk_management('EUR_USD', 0.1, 2, 1, 1, 'SELL'))
+# print(get_current_price('EUR_USD'))
+# print(get_current_price('GBP_USD'))
+create_order('EUR_USD', 0.1, 'BUY')
