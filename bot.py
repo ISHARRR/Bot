@@ -58,12 +58,11 @@ def sma(stock_symbol, api_key):
     # variable for indicator
     ti = TechIndicators(key = api_key, output_format='pandas')
     # sma
-    # data_sma100, meta_data_ema = ti.get_sma(symbol = stock_symbol, series_type = 'close', interval='1min', time_period=3000)
-    data_sma200, meta_data_ema = ti.get_sma(symbol= stock_symbol, series_type = 'close', interval='1min', time_period=6000)
+    # data_sma100, meta_data_sma = ti.get_sma(symbol = stock_symbol, series_type = 'close', interval='5min', time_period=600)
+    data_sma200, meta_data_sma = ti.get_sma(symbol= stock_symbol, series_type = 'close', interval='5min', time_period=1200)
     # getting the most current value aka the n (tail)
     # current_sma100 = data_sma100['SMA'].iloc[-1]
     current_sma200 = data_sma200['SMA'].iloc[-1]
-
     # return current_sma100, current_sma200
     return current_sma200
 
@@ -101,5 +100,5 @@ def trade(stock_symbol, api_key):
 
         time.sleep(600)
 
-# ema('USDEUR', '4OKNDHHTQH2CFWZ9')
-# ema('USDGBP', 'T7NT8GKR7CJ36U3C')
+# sma('EURUSD', '4OKNDHHTQH2CFWZ9')
+# ema('GBPUSD', 'T7NT8GKR7CJ36U3C')
