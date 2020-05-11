@@ -19,16 +19,16 @@ import oandapyV20.endpoints.pricing as pricing
 
 # account authenticator returing access_token and accountid
 def authenticator():
-    access_token="ace07448fdbcddf1d24c76db4f654abd-0673bb236877d296d74b63fef2d9be08"
+    token="ace07448fdbcddf1d24c76db4f654abd-0673bb236877d296d74b63fef2d9be08"
     accountID = "101-004-14591208-001"
 
-    return accountID, access_token
+    return accountID, token
 
-accountID, access_token = authenticator()
+accountID, token = authenticator()
 
 # api access key
-client = oandapyV20.API(access_token=access_token)
-api = oandapyV20.API(access_token=access_token)
+client = oandapyV20.API(access_token=token)
+api = oandapyV20.API(access_token=token)
 
 # requesting data
 r = accounts.AccountSummary(accountID)
@@ -55,6 +55,17 @@ def get_commission():
 
 def get_open_trade_count():
     return (response.loc['openTradeCount' , 'account'])
+
+
+def get_instruments():
+    accountID, token = authenticator()
+    client = oandapyV20.API(access_token=token)
+
+    r = accounts.AccountInstruments(accountID=accountID)
+    rv = client.request(r)
+
+    with open('instrument.txt', 'w') as outfile:
+        json.dump(rv, outfile, indent=2)
 
 
 def get_current_price(instrument):
@@ -99,7 +110,7 @@ def pip_value(instrument, risk_percentage, buyorsell):
     return round(pip_value, 2)
 
 
-def risk_management(instrument, risk_percentage, profit_ratio,loss_ratio, trailing_ratio, buyorsell):
+def risk_management(instrument, risk_percentage, profit_ratio, loss_ratio, trailing_ratio, buyorsell):
     UNIT_AMOUNT = unit_amount(instrument, risk_percentage, buyorsell)
     PIP_VALUE = pip_value(instrument, risk_percentage, buyorsell)
     CURRENT_PRICE = get_current_price(instrument)
@@ -166,7 +177,7 @@ def create_order(instrument, risk_percentage, buyorsell):
             id = data.loc['id', 0]
             print('Order status:', status +'\n'+ 'Trade ID:', id)
 
-
+# get_instruments()
 # print(risk_management('EUR_USD', 0.1, 2, 1, 1, 'SELL'))
 # print(get_current_price('EUR_USD'))
 # print(get_current_price('GBP_USD'))
