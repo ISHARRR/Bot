@@ -1,11 +1,13 @@
 from datetime import datetime
 from strategies import ema_sma
+from email.message import EmailMessage
 
 import time
 import pytz
 import random
 import recipients
 import oanda
+import smtplib
 
 
 def timezone(zone):
@@ -13,6 +15,20 @@ def timezone(zone):
     dt = datetime.now(z).strftime("%Y-%m-%d %H:%M:%S")
 
     return dt
+
+
+def email(buyorsell, stock_symbol):
+    msg = EmailMessage()
+    msg['Subject'] = buyorsell + ': ' + stock_symbol
+    msg['From'] = 'isharreehal8@gmail.com'
+    msg['To'] = ", ".join(recipients.recipients())
+    # msg['To'] = ", ".join(recipients.recipients_test())
+    msg.set_content('CHECK OVERALL TREND')
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        smtp.login('isharreehal8@gmail.com', 'znftewujyvxesikm')
+
+        smtp.send_message(msg)
 
 
 def trade(stock_symbol, api_key, oanda_stock_symbol):
