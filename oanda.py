@@ -134,48 +134,52 @@ def risk_management(instrument, risk_percentage, profit_ratio, loss_ratio, trail
     # trailing stop is distnace therefore always positive
     trailing_stop_distance = trailing_stop
 
-    return take_profit_price, stop_loss_price, trailing_stop_distance
+    return take_profit_price, stop_loss_price, trailing_stop_distance, risk_percentage
 
 
 def create_order(instrument, risk_percentage, buyorsell):
     UNIT_AMOUNT = unit_amount(instrument, risk_percentage, buyorsell)
     # sets take profit and trailing stop loss
-    TAKE_PROFIT_PRICE, STOP_LOSS_PRICE, TRAILING_STOP_DISTANCE = risk_management(instrument, 0.1, 2, 1, 1, buyorsell)
+    TAKE_PROFIT_PRICE, STOP_LOSS_PRICE, TRAILING_STOP_DISTANCE, RISK_PERCENTAGE = risk_management(instrument, 0.1, 2, 1, 1, buyorsell)
+    OPEN_TRADE_COUNT = get_open_trade_count()
 
-    # The orderspecs
-    mktOrder = MarketOrderRequest(
-        instrument = instrument,
-        units = UNIT_AMOUNT,
-        takeProfitOnFill=TakeProfitDetails(price=TAKE_PROFIT_PRICE).data,
-        # stopLossOnFill=StopLossDetails(price=STOP_LOSS).data,
-        trailingStopLossOnFill=TrailingStopLossDetails(distance=TRAILING_STOP_DISTANCE).data
-    )
-
-    # print("Market Order specs: \n{}".format(json.dumps(mktOrder.data, indent=4)))
-
-    # create the OrderCreate request
-    r = orders.OrderCreate(accountID, data=mktOrder.data)
-
-    try:
-        # create the OrderCreate request
-        rv = api.request(r)
-    except oandapyV20.exceptions.V20Error as err:
-        print(r.status_code, err)
-
+    if (RISK_PERCENTAGE >= 0.5) and (OPEN_TRADE_COUNT >= 1):
+        pass
     else:
-        # print(json.dumps(rv, indent=2))
+        # The orderspecs
+        mktOrder = MarketOrderRequest(
+            instrument = instrument,
+            units = UNIT_AMOUNT,
+            takeProfitOnFill=TakeProfitDetails(price=TAKE_PROFIT_PRICE).data,
+            # stopLossOnFill=StopLossDetails(price=STOP_LOSS).data,
+            trailingStopLossOnFill=TrailingStopLossDetails(distance=TRAILING_STOP_DISTANCE).data
+        )
+
+        # print("Market Order specs: \n{}".format(json.dumps(mktOrder.data, indent=4)))
+
+        # create the OrderCreate request
+        r = orders.OrderCreate(accountID, data=mktOrder.data)
+
         try:
-            data = DataFrame.from_dict(rv['orderCancelTransaction'], orient = 'index')
-            status = data.loc['type', 0]
-            reason = data.loc['reason', 0]
-            id = data.loc['id', 0]
-            print('Order status:', status +'\n'+ 'Reason:', reason +'\n'+ 'Trade ID:', id)
-        except KeyError:
-            # KeyError to determin catch error raised by json return of 'orderCancelTransaction' instead of 'orderFillTransaction'
-            data = DataFrame.from_dict(rv['orderFillTransaction'], orient = 'index')
-            status = data.loc['type', 0]
-            id = data.loc['id', 0]
-            print('Order status:', status +'\n'+ 'Trade ID:', id)
+            # create the OrderCreate request
+            rv = api.request(r)
+        except oandapyV20.exceptions.V20Error as err:
+            print(r.status_code, err)
+
+        else:
+            # print(json.dumps(rv, indent=2))
+            try:
+                data = DataFrame.from_dict(rv['orderCancelTransaction'], orient = 'index')
+                status = data.loc['type', 0]
+                reason = data.loc['reason', 0]
+                id = data.loc['id', 0]
+                print('Order status:', status +'\n'+ 'Reason:', reason +'\n'+ 'Trade ID:', id)
+            except KeyError:
+                # KeyError to determin catch error raised by json return of 'orderCancelTransaction' instead of 'orderFillTransaction'
+                data = DataFrame.from_dict(rv['orderFillTransaction'], orient = 'index')
+                status = data.loc['type', 0]
+                id = data.loc['id', 0]
+                print('Order status:', status +'\n'+ 'Trade ID:', id)
 
 # get_instruments()
 # print(risk_management('EUR_USD', 0.1, 2, 1, 1, 'SELL'))
