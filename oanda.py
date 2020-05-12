@@ -1,5 +1,6 @@
 from oandapyV20 import API
 from pandas import DataFrame
+from decimal import Decimal
 from oandapyV20.contrib.requests import (
     MarketOrderRequest,
     TakeProfitDetails,
@@ -11,10 +12,10 @@ from oandapyV20.contrib.requests import (
 import oandapyV20
 import oandapyV20.endpoints.accounts as accounts
 import oandapyV20.endpoints.orders as orders
+import oandapyV20.endpoints.pricing as pricing
 import json
 import requests
 import time
-import oandapyV20.endpoints.pricing as pricing
 
 
 # account authenticator returing access_token and accountid
@@ -84,7 +85,7 @@ def get_current_price(instrument):
 
 def unit_amount(instrument, risk_percentage, buyorsell):
     current_price = get_current_price(instrument)
-    leverage = 30
+    leverage = 0.30
     balance = get_balance()
     risk_percentage = risk_percentage
 
@@ -101,20 +102,21 @@ def unit_amount(instrument, risk_percentage, buyorsell):
     return float((round(unit_amount)))
 
 
-def pip_value(instrument, risk_percentage, buyorsell):
+def pip_value(instrument, one_pip, risk_percentage, buyorsell):
     CURRENT_PRICE = get_current_price(instrument)
     UNIT_AMOUNT = unit_amount(instrument, risk_percentage, buyorsell)
-    pip = float(0.0001)
+    one_pip = float(one_pip)
 
-    pip_value = (pip/CURRENT_PRICE) * UNIT_AMOUNT
+    pip_value = (one_pip/CURRENT_PRICE) * UNIT_AMOUNT
     return round(pip_value, 2)
 
 
-def risk_management(instrument, risk_percentage, profit_ratio, loss_ratio, trailing_ratio, buyorsell):
+def risk_management(instrument, one_pip, risk_percentage, profit_ratio, loss_ratio, trailing_ratio, buyorsell):
     UNIT_AMOUNT = unit_amount(instrument, risk_percentage, buyorsell)
-    PIP_VALUE = pip_value(instrument, risk_percentage, buyorsell)
+    PIP_VALUE = pip_value(instrument, one_pip, risk_percentage, buyorsell)
     CURRENT_PRICE = get_current_price(instrument)
-    pip = 0.0001
+    pip = one_pip
+    decimal_place = abs(Decimal(str(pip)).as_tuple().exponent)
 
     if buyorsell == 'BUY':
         pip_gain = float(((risk_percentage * 100)/PIP_VALUE) * profit_ratio)
@@ -125,22 +127,27 @@ def risk_management(instrument, risk_percentage, profit_ratio, loss_ratio, trail
         pip_loss = abs((float(((risk_percentage * 100)/PIP_VALUE) * loss_ratio)))
         pip_trailing = abs((float(((risk_percentage * 100)/PIP_VALUE) * trailing_ratio)))
 
-    take_profit = round((pip_gain * pip), 4)
-    stop_loss = round((pip_loss * pip), 4)
-    trailing_stop = round((pip_trailing * pip), 4)
+    take_profit = round((pip_gain * pip), decimal_place)
+    stop_loss = round((pip_loss * pip), decimal_place)
+    trailing_stop = round((pip_trailing * pip), decimal_place)
 
     take_profit_price = CURRENT_PRICE + take_profit
     stop_loss_price = CURRENT_PRICE + stop_loss
     # trailing stop is distnace therefore always positive
     trailing_stop_distance = trailing_stop
+    # =======================================================================================================
+    # temp soltion for The Trailing Stop Loss on fill price distance does not meet the minimum allowed amount
+    if trailing_stop_distance < 0.05:
+        trailing_stop_distance = 0.05
+    # =======================================================================================================
 
     return take_profit_price, stop_loss_price, trailing_stop_distance, risk_percentage
 
 
-def create_order(instrument, risk_percentage, buyorsell):
+def create_order(instrument, one_pip, risk_percentage, buyorsell):
     UNIT_AMOUNT = unit_amount(instrument, risk_percentage, buyorsell)
     # sets take profit and trailing stop loss
-    TAKE_PROFIT_PRICE, STOP_LOSS_PRICE, TRAILING_STOP_DISTANCE, RISK_PERCENTAGE = risk_management(instrument, 0.1, 2, 1, 1, buyorsell)
+    TAKE_PROFIT_PRICE, STOP_LOSS_PRICE, TRAILING_STOP_DISTANCE, RISK_PERCENTAGE = risk_management(instrument, one_pip, risk_percentage, 0.1, 0.05, 0.05, buyorsell)
     OPEN_TRADE_COUNT = get_open_trade_count()
 
     if (RISK_PERCENTAGE >= 0.5) and (OPEN_TRADE_COUNT >= 1):
@@ -182,7 +189,7 @@ def create_order(instrument, risk_percentage, buyorsell):
                 print('Order status:', status +'\n'+ 'Trade ID:', id)
 
 # get_instruments()
-# print(risk_management('EUR_USD', 0.1, 2, 1, 1, 'SELL'))
+# print(risk_management('GBP_JPY', 0.1, 2, 1, 1, 'SELL'))
 # print(get_current_price('EUR_USD'))
 # print(get_current_price('GBP_USD'))
-# create_order('EUR_USD', 0.1, 'BUY')
+# create_order('GBP_JPY', 0.01, 0.75, 'BUY')
