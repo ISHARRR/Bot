@@ -31,7 +31,7 @@ def email(buyorsell, stock_symbol):
         smtp.send_message(msg)
 
 
-def trade(stock_symbol, api_key, oanda_stock_symbol):
+def trade(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     ny_time = timezone('America/New_york')
     uk_time = timezone('Europe/London')
     time_msg = 'NY-Time:' + '(' + ny_time +') ' + '| UK-Time:' + '(' + uk_time +')'
@@ -51,13 +51,13 @@ def trade(stock_symbol, api_key, oanda_stock_symbol):
             if ((current_ema5 > current_ema15) and (previous_ema5 < previous_ema15) and (current_sma100 > current_sma200)): # BUY
                 print('BUY:', stock_symbol, time_msg)
                 email('BUY', stock_symbol)
-                oanda.create_order(oanda_stock_symbol, 0.1, 'BUY')
+                oanda.create_order(oanda_stock_symbol, one_pip, 0.75, 'BUY')
                 time.sleep(900)
 
             if ((current_ema5 < current_ema15) and (previous_ema5 > previous_ema15) and (current_sma100 < current_sma200)): # SELL
                 print('SELL:', stock_symbol, time_msg)
                 email('SELL', stock_symbol)
-                oanda.create_order(oanda_stock_symbol, 0.1, 'SELL')
+                oanda.create_order(oanda_stock_symbol, one_pip, 0.75, 'SELL')
                 time.sleep(900)
 
         except:
