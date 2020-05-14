@@ -26,4 +26,4 @@ def macd(stock_symbol, api_key):
 
     return current_macd, current_macd_signal, previous_macd, previous_macd_signal
 
-macd('GBPUSD', 'GMQ2WJ9QWT993MVD')
+# macd('GBPUSD', 'GMQ2WJ9QWT993MVD')

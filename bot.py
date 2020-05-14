@@ -1,7 +1,7 @@
 from datetime import datetime
 from indicators import (
     ema_sma,
-    macd,
+    macd_strat,
 )
 from email.message import EmailMessage
 
@@ -57,13 +57,13 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
             if ((current_ema5 > current_ema15) and (previous_ema5 < previous_ema15) and (current_sma100 > current_sma200)): # BUY
                 print('BUY:', stock_symbol, time_msg)
                 email('BUY', stock_symbol, email_message)
-                buy.create_order('BUY')
+                order.create_order('BUY')
                 time.sleep(960)
 
             if ((current_ema5 < current_ema15) and (previous_ema5 > previous_ema15) and (current_sma100 < current_sma200)): # SELL
                 print('SELL:', stock_symbol, time_msg)
                 email('SELL', stock_symbol, email_message)
-                buy.create_order('SELL')
+                order.create_order('SELL')
                 time.sleep(960)
 
         except:
@@ -88,7 +88,7 @@ def macd(stock_symbol, one_pip, api_key, oanda_stock_symbol):
         time_msg = '- ' + 'NY-Time:' + '(' + ny_time +') ' + '| UK-Time:' + '(' + uk_time +')'
 
         try:
-            current_macd, current_macd_signal, previous_macd, previous_macd_signal = macd.sma(stock_symbol, api_key)
+            current_macd, current_macd_signal, previous_macd, previous_macd_signal = macd_strat.macd(stock_symbol, api_key)
 
             email_message = 'MACD Strategy - 15 min timeframe'
 

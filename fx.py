@@ -1,5 +1,4 @@
 import bot
-import oanda
 
 
 # to run the various currencies enter " python -c 'import fx; fx.eurusd()' "
@@ -14,8 +13,13 @@ def gbpjpy_ema():
 
 
 def eurusd_macd():
-    bot.macd('EURUSD', 0.0001, 'GMQ2WJ9QWT993MVD', 'EUR_USD')
+    bot.macd('EURUSD', 0.0001, '4OKNDHHTQH2CFWZ9', 'EUR_USD')
 def gbpusd_macd():
-    bot.macd('GBPUSD', 0.0001, 'U6V8MKZWYAU0J728', 'GBP_USD')
+    bot.macd('GBPUSD', 0.0001, 'T7NT8GKR7CJ36U3C', 'GBP_USD')
 def gbpjpy_macd():
-    bot.macd('GBPJPY', 0.01, '3WBPOX3KVTFMVJ3P', 'GBP_JPY')
+    bot.macd('GBPJPY', 0.01, 'ARA2JDHJFGRI89VB', 'GBP_JPY')
+
+
+# 3WBPOX3KVTFMVJ3P
+# U6V8MKZWYAU0J728
+# GMQ2WJ9QWT993MVD
