@@ -18,178 +18,196 @@ import requests
 import time
 
 
-# account authenticator returing access_token and accountid
-def authenticator():
+class Oanda:
+    # account authenticator returing access_token
     token="ace07448fdbcddf1d24c76db4f654abd-0673bb236877d296d74b63fef2d9be08"
-    accountID = "101-004-14591208-001"
-
-    return accountID, token
-
-accountID, token = authenticator()
-
-# api access key
-client = oandapyV20.API(access_token=token)
-api = oandapyV20.API(access_token=token)
-
-# requesting data
-r = accounts.AccountSummary(accountID)
-client.request(r)
-# saving the response into a dataframe
-response = DataFrame.from_dict(r.response)
-
-
-def get_balance():
-    return (response.loc['balance' , 'account'])
-
-
-def get_pl():
-    return (response.loc['pl' , 'account'])
-
-
-def get_margin_available():
-    return (response.loc['marginAvailable' , 'account'])
-
-
-def get_commission():
-    return (response.loc['commission' , 'account'])
-
-
-def get_open_trade_count():
-    return (response.loc['openTradeCount' , 'account'])
-
-
-def get_instruments():
-    accountID, token = authenticator()
+    # api access key
     client = oandapyV20.API(access_token=token)
+    api = oandapyV20.API(access_token=token)
 
-    r = accounts.AccountInstruments(accountID=accountID)
-    rv = client.request(r)
-
-    with open('instrument.txt', 'w') as outfile:
-        json.dump(rv, outfile, indent=2)
-
-
-def get_current_price(instrument):
-    # passing arguments
-    params ={"instruments": instrument}
-    # places request
-    r = pricing.PricingInfo(accountID=accountID, params=params)
-    rv = api.request(r)
-    # BS ways of naigating json
-    res = r.response['prices']
-    df = DataFrame.from_dict(res, orient='columns')
-    df = df.loc[0, 'closeoutBid']
-    # returing the current price ask to 4 decimal places
-    return float("{:.{}f}".format(float(df), 4))
+    def __init__(self, accountID, instrument, one_pip, risk_percentage):
+        self.accountID = accountID
+        self.instrument = instrument
+        self.one_pip = one_pip
+        self.risk_percentage = risk_percentage
 
 
-def unit_amount(instrument, risk_percentage, buyorsell):
-    current_price = get_current_price(instrument)
-    leverage = 0.30
-    balance = get_balance()
-    risk_percentage = risk_percentage
+    def account(self):
+        # requesting data
+        r = accounts.AccountSummary(self.accountID)
+        self.client.request(r)
+        # saving the response into a dataframe
+        response = DataFrame.from_dict(r.response)
+        return response
 
-    unit_size = (float(balance) * float(leverage)) * float(risk_percentage)
-    unit_amount = float(unit_size) * float(current_price)
+        # ==============================================================================
+        # returns account balance
+    def get_balance(self):
+        response = self.account()
+        return (response.loc['balance' , 'account'])
 
-    if buyorsell == 'SELL':
-        unit_amount = unit_amount * - 1
-    elif buyorsell == 'BUY':
-        unit_amount = unit_amount
-    else:
-        raise ValueError('Please enter BUY or SELL')
+    # returns total profit loss on account
+    def get_pl(self):
+        response = self.account()
+        return (response.loc['pl' , 'account'])
 
-    return float((round(unit_amount)))
+    # returns margin avaible
+    def get_margin_available(self):
+        response = self.account()
+        return (response.loc['marginAvailable' , 'account'])
 
+    # returns margin used
+    def get_margin_used(self):
+        response = self.account()
+        return (response.loc['marginUsed' , 'account'])
 
-def pip_value(instrument, one_pip, risk_percentage, buyorsell):
-    CURRENT_PRICE = get_current_price(instrument)
-    UNIT_AMOUNT = unit_amount(instrument, risk_percentage, buyorsell)
-    one_pip = float(one_pip)
+    # returns total commission paid
+    def get_commission(self):
+        response = self.account()
+        return (response.loc['commission' , 'account'])
 
-    pip_value = (one_pip/CURRENT_PRICE) * UNIT_AMOUNT
-    return round(pip_value, 2)
+    # returns number of open trades
+    def get_open_trade_count(self):
+        response = self.account()
+        return (response.loc['openTradeCount' , 'account'])
 
+    # returns current prices of trading instrument
+    def get_current_price(self):
+        # passing arguments
+        params ={"instruments": self.instrument}
+        # places request
+        r = pricing.PricingInfo(accountID=self.accountID, params=params)
+        rv = self.api.request(r)
+        # BS ways of naigating json
+        res = r.response['prices']
+        df = DataFrame.from_dict(res, orient='columns')
+        df = df.loc[0, 'closeoutBid']
+        # returing the current price ask to 4 decimal places
+        return float("{:.{}f}".format(float(df), 4))
+    # ==============================================================================
+    # returns list of instruments as output into instrument.txt, already ran once
+    def get_instruments(self):
+        self.client = oandapyV20.API(access_token=token)
 
-def risk_management(instrument, one_pip, risk_percentage, profit_ratio, loss_ratio, trailing_ratio, buyorsell):
-    UNIT_AMOUNT = unit_amount(instrument, risk_percentage, buyorsell)
-    PIP_VALUE = pip_value(instrument, one_pip, risk_percentage, buyorsell)
-    CURRENT_PRICE = get_current_price(instrument)
-    pip = one_pip
-    decimal_place = abs(Decimal(str(pip)).as_tuple().exponent)
+        r = accounts.AccountInstruments(accountID=self.accountID)
+        rv = client.request(r)
 
-    if buyorsell == 'BUY':
-        pip_gain = float(((risk_percentage * 100)/PIP_VALUE) * profit_ratio)
-        pip_loss = (float(((risk_percentage * 100)/PIP_VALUE) * loss_ratio)) * -1
-        pip_trailing = (float(((risk_percentage * 100)/PIP_VALUE) * trailing_ratio))
-    elif buyorsell == 'SELL':
-        pip_gain = float(((risk_percentage * 100)/PIP_VALUE) * profit_ratio)
-        pip_loss = abs((float(((risk_percentage * 100)/PIP_VALUE) * loss_ratio)))
-        pip_trailing = abs((float(((risk_percentage * 100)/PIP_VALUE) * trailing_ratio)))
+        with open('instrument.txt', 'w') as outfile:
+            json.dump(rv, outfile, indent=2)
+    # ==============================================================================
+    # CALULATIONS
+    # calculates unit amount based of balance and risk percantge
+    def unit_amount(self, buyorsell):
+        current_price = self.get_current_price()
+        leverage = 30
+        balance = self.get_balance()
+        risk_percentage = self.risk_percentage
 
-    take_profit = round((pip_gain * pip), decimal_place)
-    stop_loss = round((pip_loss * pip), decimal_place)
-    trailing_stop = round((pip_trailing * pip), decimal_place)
+        # unit_size = float(balance) * float(risk_percentage)
+        unit_size = (float(balance) * float(leverage)) * float(risk_percentage)
+        unit_amount = float(unit_size) * float(current_price)
 
-    take_profit_price = CURRENT_PRICE + take_profit
-    stop_loss_price = CURRENT_PRICE + stop_loss
-    # trailing stop is distnace therefore always positive
-    trailing_stop_distance = trailing_stop
-    # =======================================================================================================
-    # temp soltion for The Trailing Stop Loss on fill price distance does not meet the minimum allowed amount
-    if trailing_stop_distance < 0.05:
-        trailing_stop_distance = 0.05
-    # =======================================================================================================
-
-    return take_profit_price, stop_loss_price, trailing_stop_distance, risk_percentage
-
-
-def create_order(instrument, one_pip, risk_percentage, buyorsell):
-    UNIT_AMOUNT = unit_amount(instrument, risk_percentage, buyorsell)
-    # sets take profit and trailing stop loss
-    TAKE_PROFIT_PRICE, STOP_LOSS_PRICE, TRAILING_STOP_DISTANCE, RISK_PERCENTAGE = risk_management(instrument, one_pip, risk_percentage, 0.1, 0.05, 0.05, buyorsell)
-    OPEN_TRADE_COUNT = get_open_trade_count()
-
-    if (RISK_PERCENTAGE >= 0.5) and (OPEN_TRADE_COUNT >= 1):
-        pass
-    else:
-        # The orderspecs
-        mktOrder = MarketOrderRequest(
-            instrument = instrument,
-            units = UNIT_AMOUNT,
-            takeProfitOnFill=TakeProfitDetails(price=TAKE_PROFIT_PRICE).data,
-            # stopLossOnFill=StopLossDetails(price=STOP_LOSS).data,
-            trailingStopLossOnFill=TrailingStopLossDetails(distance=TRAILING_STOP_DISTANCE).data
-        )
-
-        # print("Market Order specs: \n{}".format(json.dumps(mktOrder.data, indent=4)))
-
-        # create the OrderCreate request
-        r = orders.OrderCreate(accountID, data=mktOrder.data)
-
-        try:
-            # create the OrderCreate request
-            rv = api.request(r)
-        except oandapyV20.exceptions.V20Error as err:
-            print(r.status_code, err)
-
+        if buyorsell == 'SELL':
+            unit_amount = unit_amount * - 1
+        elif buyorsell == 'BUY':
+            unit_amount = unit_amount
         else:
-            # print(json.dumps(rv, indent=2))
-            try:
-                data = DataFrame.from_dict(rv['orderCancelTransaction'], orient = 'index')
-                status = data.loc['type', 0]
-                reason = data.loc['reason', 0]
-                id = data.loc['id', 0]
-                print('Order status:', status +'\n'+ 'Reason:', reason +'\n'+ 'Trade ID:', id)
-            except KeyError:
-                # KeyError to determin catch error raised by json return of 'orderCancelTransaction' instead of 'orderFillTransaction'
-                data = DataFrame.from_dict(rv['orderFillTransaction'], orient = 'index')
-                status = data.loc['type', 0]
-                id = data.loc['id', 0]
-                print('Order status:', status +'\n'+ 'Trade ID:', id)
+            raise ValueError('Please enter BUY or SELL')
 
-# get_instruments()
-# print(risk_management('GBP_JPY', 0.1, 2, 1, 1, 'SELL'))
-# print(get_current_price('EUR_USD'))
-# print(get_current_price('GBP_USD'))
-# create_order('GBP_JPY', 0.01, 0.75, 'BUY')
+        return float((round(unit_amount)))
+
+    # calculates the value of a single pip based of the unit amount
+    def pip_value(self, buyorsell):
+        CURRENT_PRICE = self.get_current_price()
+        UNIT_AMOUNT = self.unit_amount(buyorsell)
+        one_pip = float(self.one_pip)
+
+        pip_value = (one_pip/CURRENT_PRICE) * UNIT_AMOUNT
+        return round(pip_value, 2)
+
+    # calculates take profit and stop loss based of balance available and risk percantge
+    def risk_management(self, profit_ratio, loss_ratio, trailing_ratio, buyorsell):
+        UNIT_AMOUNT = self.unit_amount(buyorsell)
+        PIP_VALUE = self.pip_value(buyorsell)
+        CURRENT_PRICE = self.get_current_price()
+        pip = self.one_pip
+        # getting the decimal place number e.g 0.0001 = 4th dp
+        decimal_place = abs(Decimal(str(pip)).as_tuple().exponent)
+
+        if buyorsell == 'BUY':
+            pip_gain = float(((self.risk_percentage * 100)/PIP_VALUE) * profit_ratio)
+            pip_loss = (float(((self.risk_percentage * 100)/PIP_VALUE) * loss_ratio)) * -1
+            pip_trailing = (float(((self.risk_percentage * 100)/PIP_VALUE) * trailing_ratio))
+        elif buyorsell == 'SELL':
+            pip_gain = float(((self.risk_percentage * 100)/PIP_VALUE) * profit_ratio)
+            pip_loss = abs((float(((self.risk_percentage * 100)/PIP_VALUE) * loss_ratio)))
+            pip_trailing = abs((float(((self.risk_percentage * 100)/PIP_VALUE) * trailing_ratio)))
+
+        take_profit = round((pip_gain * pip), decimal_place)
+        stop_loss = round((pip_loss * pip), decimal_place)
+        trailing_stop = round((pip_trailing * pip), decimal_place)
+
+        take_profit_price = CURRENT_PRICE + take_profit
+        stop_loss_price = CURRENT_PRICE + stop_loss
+        # trailing stop is distnace therefore always positive
+        trailing_stop_distance = trailing_stop
+        # =======================================================================================================
+        # temp soltion for The Trailing Stop Loss on fill price distance does not meet the minimum allowed amount
+        # if trailing_stop_distance < 0.05:
+        #     trailing_stop_distance = 0.05
+        # =======================================================================================================
+        return take_profit_price, stop_loss_price, trailing_stop_distance,
+
+    # order template
+    def create_order(self, buyorsell):
+        UNIT_AMOUNT = self.unit_amount(buyorsell)
+        # sets take profit and trailing stop loss
+        TAKE_PROFIT_PRICE, STOP_LOSS_PRICE, TRAILING_STOP_DISTANCE = self.risk_management(0.1, 0.05, 0.05, buyorsell)
+        RISK_PERCENTAGE = self.risk_percentage
+        OPEN_TRADE_COUNT = self.get_open_trade_count()
+
+        if (RISK_PERCENTAGE >= 0.5) and (OPEN_TRADE_COUNT >= 1):
+            pass
+        else:
+            # The orderspecs
+            mktOrder = MarketOrderRequest(
+                instrument = self.instrument,
+                units = UNIT_AMOUNT,
+                takeProfitOnFill=TakeProfitDetails(price=TAKE_PROFIT_PRICE).data,
+                # stopLossOnFill=StopLossDetails(price=STOP_LOSS).data,
+                trailingStopLossOnFill=TrailingStopLossDetails(distance=TRAILING_STOP_DISTANCE).data
+            )
+
+            # print("Market Order specs: \n{}".format(json.dumps(mktOrder.data, indent=4)))
+
+            # create the OrderCreate request
+            r = orders.OrderCreate(self.accountID, data=mktOrder.data)
+
+            try:
+                # send the OrderCreate request
+                rv = self.api.request(r)
+            except oandapyV20.exceptions.V20Error as err:
+                print(r.status_code, err)
+
+            else:
+                # print(json.dumps(rv, indent=2))
+                try:
+                    data = DataFrame.from_dict(rv['orderCancelTransaction'], orient = 'index')
+                    status = data.loc['type', 0]
+                    reason = data.loc['reason', 0]
+                    id = data.loc['id', 0]
+                    print('Order status:', status +'\n'+ 'Reason:', reason +'\n'+ 'Trade ID:', id)
+                except KeyError:
+                    # KeyError to determin catch error raised by json return of 'orderCancelTransaction' instead of 'orderFillTransaction'
+                    data = DataFrame.from_dict(rv['orderFillTransaction'], orient = 'index')
+                    status = data.loc['type', 0]
+                    id = data.loc['id', 0]
+                    print('Order status:', status +'\n'+ 'Trade ID:', id)
+
+# self.accountID = accountID
+# self.instrument = instrument
+# self.one_pip = one_pip
+# self.risk_percentage = risk_percentage
+# self.buyorsell = buyorsell
+# sell = Oanda('101-004-14591208-001', 'EUR_USD', 0.0001, 1)
+# sell.create_order('BUY')

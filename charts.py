@@ -3,13 +3,11 @@ from alpha_vantage.timeseries import TimeSeries
 from datetime import datetime
 from email.message import EmailMessage
 
-
 import matplotlib
 import matplotlib.pyplot as plt
 import os
 import time
 import smtplib
-
 
 
 def ema_graph(stock_symbol, api_key):
@@ -32,11 +30,31 @@ def ema_graph(stock_symbol, api_key):
     plt.title(stock_symbol)
     plt.show()
 
+
+def macd_graph(stock_symbol, api_key):
+
+    # variable for indicator
+    ti = TechIndicators(key = api_key, output_format='pandas')
+    # ema
+    data_macd, meta_data_ema = ti.get_macd(
+        symbol = stock_symbol,
+        series_type = 'close',
+        interval='5min',
+        fastperiod=12,
+        slowperiod=26,
+        signalperiod=9
+        )
+
+    plt.plot(data_macd)
+
+    plt.title(stock_symbol)
+    plt.show()
+
 def main():
     # 1
     # ema_graph('SPX', 'F34FEQKDQI3J2AKI')
     # 2
-    ema_graph('EURUSD', 'E47X6GN73CIDKMOW')
+    macd_graph('EURUSD', 'E47X6GN73CIDKMOW')
     # 3
     #ema_graph('GBPUSD', 'ARA2JDHJFGRI89VB')
     # 4
