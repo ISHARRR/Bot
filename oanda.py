@@ -6,10 +6,12 @@ from oandapyV20.contrib.requests import (
     TakeProfitDetails,
     StopLossDetails,
     TrailingStopLossOrderRequest,
-    TrailingStopLossDetails
+    TrailingStopLossDetails,
+    TradeCloseRequest,
 )
 
 import oandapyV20
+import oandapyV20.endpoints.trades as trades
 import oandapyV20.endpoints.accounts as accounts
 import oandapyV20.endpoints.orders as orders
 import oandapyV20.endpoints.pricing as pricing
@@ -203,6 +205,21 @@ class Oanda:
                     status = data.loc['type', 0]
                     id = data.loc['id', 0]
                     print('Order status:', status +'\n'+ 'Trade ID:', id)
+                    return id
+
+    def close_order(self, id):
+        id = id
+        ordr = TradeCloseRequest()
+        r = trades.TradeClose(self.accountID, tradeID=id, data=ordr.data)
+        # perform the request
+        rv = self.client.request(r)
+        data = DataFrame.from_dict(rv['orderCreateTransaction'], orient = 'index')
+        trade_close = data.loc['tradeClose', 0]
+        units_closed = trade_close['units']
+        tradeID = trade_close['tradeID']
+        print('Units closed:', units_closed +'\n'+ 'Trade ID:', tradeID)
+
+        return units_closed, tradeID
 
 # self.accountID = accountID
 # self.instrument = instrument
@@ -210,4 +227,6 @@ class Oanda:
 # self.risk_percentage = risk_percentage
 # self.buyorsell = buyorsell
 # sell = Oanda('101-004-14591208-001', 'EUR_USD', 0.0001, 1)
-# sell.create_order('BUY')
+# id = sell.create_order('BUY')
+# time.sleep(15)
+# sell.close_order(id)

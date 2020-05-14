@@ -40,7 +40,7 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     time_msg = 'NY-Time:' + '(' + ny_time +') ' + '| UK-Time:' + '(' + uk_time +')'
     print(stock_symbol, 'Running...', time_msg )
 
-    order = oanda.Oanda('101-004-14591208-001', 'oanda_stock_symbol', one_pip, 1)
+    order = oanda.Oanda('101-004-14591208-001', oanda_stock_symbol, one_pip, 1)
 
     while True:
         ny_time = timezone('America/New_york')
@@ -48,27 +48,27 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
         time_msg = '- ' + 'NY-Time:' + '(' + ny_time +') ' + '| UK-Time:' + '(' + uk_time +')'
 
-        try:
-            current_sma100, current_sma200 = ema_sma.sma(stock_symbol, api_key)
-            current_ema5, current_ema15, previous_ema5, previous_ema15 = ema_sma.ema(stock_symbol, api_key)
+        # try:
+        current_sma100, current_sma200 = ema_sma.sma(stock_symbol, api_key)
+        current_ema5, current_ema15, previous_ema5, previous_ema15 = ema_sma.ema(stock_symbol, api_key)
 
-            email_message = 'EMA Crossover Strategy - 30 min timeframe'
+        email_message = 'EMA Crossover Strategy - 30 min timeframe'
 
-            if ((current_ema5 > current_ema15) and (previous_ema5 < previous_ema15) and (current_sma100 > current_sma200)): # BUY
-                print('BUY:', stock_symbol, time_msg)
-                email('BUY', stock_symbol, email_message)
-                order.create_order('BUY')
-                time.sleep(960)
+        if ((current_ema5 > current_ema15) and (previous_ema5 < previous_ema15) and (current_sma100 > current_sma200)): # BUY
+            print('BUY:', stock_symbol, time_msg)
+            email('BUY', stock_symbol, email_message)
+            order.create_order('BUY')
+            time.sleep(1100)
 
-            if ((current_ema5 < current_ema15) and (previous_ema5 > previous_ema15) and (current_sma100 < current_sma200)): # SELL
-                print('SELL:', stock_symbol, time_msg)
-                email('SELL', stock_symbol, email_message)
-                order.create_order('SELL')
-                time.sleep(960)
+        if ((current_ema5 < current_ema15) and (previous_ema5 > previous_ema15) and (current_sma100 < current_sma200)): # SELL
+            print('SELL:', stock_symbol, time_msg)
+            email('SELL', stock_symbol, email_message)
+            order.create_order('SELL')
+            time.sleep(1100)
 
-        except:
-            print ('EXCEPTION ERROR', time_msg)
-            time.sleep(random.randint(30, 150))
+        # except:
+        #     print ('EXCEPTION ERROR', time_msg)
+        #     time.sleep(random.randint(30, 150))
 
         time.sleep(600)
 
@@ -79,7 +79,7 @@ def macd(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     time_msg = 'NY-Time:' + '(' + ny_time +') ' + '| UK-Time:' + '(' + uk_time +')'
     print(stock_symbol, 'Running...', time_msg )
 
-    order = oanda.Oanda('101-004-14591208-003', 'oanda_stock_symbol', one_pip, 1)
+    order = oanda.Oanda('101-004-14591208-003', oanda_stock_symbol, one_pip, 1)
 
     while True:
         ny_time = timezone('America/New_york')
