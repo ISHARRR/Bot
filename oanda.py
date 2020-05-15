@@ -161,7 +161,7 @@ class Oanda:
         return take_profit_price, stop_loss_price, trailing_stop_distance,
 
     # order template
-    def create_order(self, buyorsell):
+    def create_order(self, order_type, buyorsell):
         UNIT_AMOUNT = self.unit_amount(buyorsell)
         # sets take profit and trailing stop loss
         TAKE_PROFIT_PRICE, STOP_LOSS_PRICE, TRAILING_STOP_DISTANCE = self.risk_management(0.1, 0.05, 0.05, buyorsell)
@@ -171,26 +171,48 @@ class Oanda:
         if (RISK_PERCENTAGE >= 0.5) and (OPEN_TRADE_COUNT >= 1):
             pass
         else:
+            if order_type == 'ALL':
             # The orderspecs
-            mktOrder = MarketOrderRequest(
-                instrument = self.instrument,
-                units = UNIT_AMOUNT,
-                takeProfitOnFill=TakeProfitDetails(price=TAKE_PROFIT_PRICE).data,
-                # stopLossOnFill=StopLossDetails(price=STOP_LOSS).data,
-                trailingStopLossOnFill=TrailingStopLossDetails(distance=TRAILING_STOP_DISTANCE).data
-            )
-
+                mktOrder = MarketOrderRequest(
+                    instrument = self.instrument,
+                    units = UNIT_AMOUNT,
+                    takeProfitOnFill=TakeProfitDetails(price=TAKE_PROFIT_PRICE).data,
+                    stopLossOnFill=StopLossDetails(price=STOP_LOSS).data,
+                    trailingStopLossOnFill=TrailingStopLossDetails(distance=TRAILING_STOP_DISTANCE).data,
+                )
+            elif order_type == 'TPSP':
+                mktOrder = MarketOrderRequest(
+                    instrument = self.instrument,
+                    units = UNIT_AMOUNT,
+                    takeProfitOnFill=TakeProfitDetails(price=TAKE_PROFIT_PRICE).data,
+                    stopLossOnFill=StopLossDetails(price=STOP_LOSS).data,
+                )
+            elif order_type == 'TPTS':
+                mktOrder = MarketOrderRequest(
+                    instrument = self.instrument,
+                    units = UNIT_AMOUNT,
+                    takeProfitOnFill=TakeProfitDetails(price=TAKE_PROFIT_PRICE).data,
+                    trailingStopLossOnFill=TrailingStopLossDetails(distance=TRAILING_STOP_DISTANCE).data,
+                )
+            elif order_type == 'TS':
+                mktOrder = MarketOrderRequest(
+                    instrument = self.instrument,
+                    units = UNIT_AMOUNT,
+                    trailingStopLossOnFill=TrailingStopLossDetails(distance=TRAILING_STOP_DISTANCE).data,
+                )
+            elif order_type == 'CROSS':
+                mktOrder = MarketOrderRequest(
+                    instrument = self.instrument,
+                    units = UNIT_AMOUNT,
+                )
             # print("Market Order specs: \n{}".format(json.dumps(mktOrder.data, indent=4)))
-
             # create the OrderCreate request
             r = orders.OrderCreate(self.accountID, data=mktOrder.data)
-
             try:
                 # send the OrderCreate request
                 rv = self.api.request(r)
             except oandapyV20.exceptions.V20Error as err:
                 print(r.status_code, err)
-
             else:
                 # print(json.dumps(rv, indent=2))
                 try:
@@ -205,8 +227,10 @@ class Oanda:
                     status = data.loc['type', 0]
                     id = data.loc['id', 0]
                     print('Order status:', status +'\n'+ 'Trade ID:', id)
+
                     return id
 
+    # close order
     def close_order(self, id):
         id = id
         ordr = TradeCloseRequest()
@@ -226,7 +250,8 @@ class Oanda:
 # self.one_pip = one_pip
 # self.risk_percentage = risk_percentage
 # self.buyorsell = buyorsell
-# sell = Oanda('101-004-14591208-001', 'EUR_USD', 0.0001, 1)
-# id = sell.create_order('BUY')
+# sell = Oanda('101-004-14591208-002', 'EUR_USD', 0.0001, 1)
+# sell.create_order('TS','BUY')
+# id = 769
 # time.sleep(15)
 # sell.close_order(id)
