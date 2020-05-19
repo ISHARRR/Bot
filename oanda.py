@@ -177,7 +177,7 @@ class Oanda:
                     instrument = self.instrument,
                     units = UNIT_AMOUNT,
                     takeProfitOnFill=TakeProfitDetails(price=TAKE_PROFIT_PRICE).data,
-                    stopLossOnFill=StopLossDetails(price=STOP_LOSS).data,
+                    stopLossOnFill=StopLossDetails(price=STOP_LOSS_PRICE).data,
                     trailingStopLossOnFill=TrailingStopLossDetails(distance=TRAILING_STOP_DISTANCE).data,
                 )
             elif order_type == 'TPSP':
@@ -185,7 +185,7 @@ class Oanda:
                     instrument = self.instrument,
                     units = UNIT_AMOUNT,
                     takeProfitOnFill=TakeProfitDetails(price=TAKE_PROFIT_PRICE).data,
-                    stopLossOnFill=StopLossDetails(price=STOP_LOSS).data,
+                    stopLossOnFill=StopLossDetails(price=STOP_LOSS_PRICE).data,
                 )
             elif order_type == 'TPTS':
                 mktOrder = MarketOrderRequest(

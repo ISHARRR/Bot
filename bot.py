@@ -44,7 +44,6 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     ts = oanda.Oanda('101-004-14591208-003', oanda_stock_symbol, one_pip, 1)
     tpts = oanda.Oanda('101-004-14591208-004', oanda_stock_symbol, one_pip, 1)
     all = oanda.Oanda('101-004-14591208-005', oanda_stock_symbol, one_pip, 1)
-    cross = oanda.Oanda('101-004-14591208-006', oanda_stock_symbol, one_pip, 1)
 
     while True:
         ny_time = timezone('America/New_york')
@@ -53,12 +52,12 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
         time_msg = '- ' + 'NY-Time:' + '(' + ny_time +') ' + '| UK-Time:' + '(' + uk_time +')'
 
         try:
-            # current_sma100, current_sma200 = ema_sma.sma(stock_symbol, api_key)
-            current_ema5, current_ema15, previous_ema5, previous_ema15 = ema_sma.ema(stock_symbol, api_key)
+            current_sma200 = ema_sma.sma_200(stock_symbol, api_key)
+            current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.ema_10_30(stock_symbol, api_key)
 
             email_message = 'EMA Crossover Strategy - 30 min timeframe'
 
-            if ((current_ema5 > current_ema15) and (previous_ema5 < previous_ema15)) # and (current_sma100 > current_sma200)): # BUY
+            if ((current_ema_fast > current_ema_slow) and (previous_ema_fast < previous_ema_slow) and (current_ema_slow < current_sma200)): # BUY
                 print('BUY:', stock_symbol, time_msg)
                 email('BUY', stock_symbol, email_message)
 
@@ -66,13 +65,8 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                 ts.create_order('TS', 'BUY')
                 tpts.create_order('TPTS', 'BUY')
                 all.create_order('ALL', 'BUY')
-                buy_id = cross.create_order('ALL', 'BUY')
-                cross.close_order(sell_id)
 
-
-                time.sleep(1100)
-
-            if ((current_ema5 < current_ema15) and (previous_ema5 > previous_ema15)) # and (current_sma100 < current_sma200)): # SELL
+            if ((current_ema_fast < current_ema_slow) and (previous_ema_fast > previous_ema_slow) and (current_ema_slow > current_sma200)): # SELL
                 print('SELL:', stock_symbol, time_msg)
                 email('SELL', stock_symbol, email_message)
 
@@ -80,60 +74,9 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                 ts.create_order('TS', 'SELL')
                 tpts.create_order('TPTS', 'SELL')
                 all.create_order('ALL', 'SELL')
-                sell_id = cross.create_order('ALL', 'SELL')
-                cross.close_order(buy_id)
 
-                time.sleep(1100)
-
-        except:
-            print ('EXCEPTION ERROR', time_msg)
+        except Exception as e :
+            print ('EXCEPTION ERROR', time_msg + '\n' + str(e))
             time.sleep(random.randint(30, 150))
 
         time.sleep(600)
-
-
-# def macd(stock_symbol, one_pip, api_key, oanda_stock_symbol):
-#     ny_time = timezone('America/New_york')
-#     uk_time = timezone('Europe/London')
-#     time_msg = 'NY-Time:' + '(' + ny_time +') ' + '| UK-Time:' + '(' + uk_time +')'
-#     print(stock_symbol, 'Running...', time_msg )
-#
-#     TPSP = oanda.Oanda('101-004-14591208-002', oanda_stock_symbol, one_pip, 1)
-#     TS = oanda.Oanda('101-004-14591208-003', oanda_stock_symbol, one_pip, 1)
-#     TPTS = oanda.Oanda('101-004-14591208-004', oanda_stock_symbol, one_pip, 1)
-#     ALL = oanda.Oanda('101-004-14591208-005', oanda_stock_symbol, one_pip, 1)
-#     CROSS = oanda.Oanda('101-004-14591208-006', oanda_stock_symbol, one_pip, 1)
-#
-#     while True:
-#         ny_time = timezone('America/New_york')
-#         uk_time = timezone('Europe/London')
-#
-#         time_msg = '- ' + 'NY-Time:' + '(' + ny_time +') ' + '| UK-Time:' + '(' + uk_time +')'
-#
-#         try:
-#             current_macd, current_macd_signal, previous_macd, previous_macd_signal = macd_strat.macd(stock_symbol, api_key)
-#
-#             email_message = 'MACD Strategy - 15 min timeframe'
-#
-#             if ((current_macd > current_macd_signal) and (previous_macd < previous_macd_signal) and (current_macd < 0)): # BUY
-#                 print('BUY:', stock_symbol, time_msg)
-#                 email('BUY', stock_symbol, email_message)
-#
-#                 order.create_order('BUY')
-#
-#                 time.sleep(660)
-#
-#             if ((current_macd < current_macd_signal) and (current_macd > current_macd_signal) and (current_macd > 0)): # SELL
-#                 print('SELL:', stock_symbol, time_msg)
-#                 email('SELL', stock_symbol, email_message)
-#                 order.create_order('SELL')
-#                 time.sleep(660)
-#
-#         except:
-#             print ('EXCEPTION ERROR', time_msg)
-#             time.sleep(random.randint(30, 150))
-#
-#         time.sleep(300)
-
-# sma('EURUSD', '4OKNDHHTQH2CFWZ9')
-# ema('GBPUSD', 'T7NT8GKR7CJ36U3C')

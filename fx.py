@@ -1,4 +1,5 @@
 import bot
+import bot_test
 
 
 # to run the various currencies enter " python -c 'import fx; fx.eurusd()' "
@@ -23,3 +24,6 @@ def gbpjpy_ema():
 # 3WBPOX3KVTFMVJ3P
 # U6V8MKZWYAU0J728
 # GMQ2WJ9QWT993MVD
+
+def test():
+    bot_test.ema('EURUSD', 0.0001, 'ARA2JDHJFGRI89VB', 'EUR_USD')
