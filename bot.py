@@ -20,13 +20,15 @@ def timezone(zone):
     return dt
 
 
-def email(buyorsell, stock_symbol, strategy):
+def email(buyorsell, stock_symbol, context, privacy='public'):
     msg = EmailMessage()
     msg['Subject'] = buyorsell + ': ' + stock_symbol
     msg['From'] = 'isharreehal8@gmail.com'
-    msg['To'] = ", ".join(recipients.recipients())
-    # msg['To'] = ", ".join(recipients.recipients_test())
-    msg.set_content(strategy)
+    if privacy == 'public':
+        msg['To'] = ", ".join(recipients.recipients())
+    elif privacy == 'private':
+        msg['To'] = ", ".join(recipients.recipients_test())
+    msg.set_content(context)
 
     with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
         smtp.login('isharreehal8@gmail.com', 'znftewujyvxesikm')
@@ -75,8 +77,9 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                 tpts.create_order('TPTS', 'SELL')
                 all.create_order('ALL', 'SELL')
 
-        except Exception as e :
+        except Exception as e:
             print ('EXCEPTION ERROR', time_msg + '\n' + str(e))
             time.sleep(random.randint(30, 150))
+            email('EXCEPTION', 'ERROR', str(e), 'private')
 
         time.sleep(600)
