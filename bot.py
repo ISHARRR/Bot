@@ -10,7 +10,7 @@ import pytz
 import random
 import recipients
 import oanda
-import smtplib
+import smtplibg
 
 
 def timezone(zone):
@@ -59,7 +59,7 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
             email_message = 'EMA Crossover Strategy - 30 min timeframe'
 
-            if ((current_ema_fast > current_ema_slow) and (previous_ema_fast < previous_ema_slow) and (current_ema_slow < current_sma200)): # BUY
+            if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_ema_slow < current_sma200)): # BUY
                 print('BUY:', stock_symbol, time_msg)
                 email('BUY', stock_symbol, email_message)
 
@@ -68,7 +68,9 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                 tpts.create_order('TPTS', 'BUY')
                 all.create_order('ALL', 'BUY')
 
-            if ((current_ema_fast < current_ema_slow) and (previous_ema_fast > previous_ema_slow) and (current_ema_slow > current_sma200)): # SELL
+                time.sleep(1260)
+
+            if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_ema_slow > current_sma200)): # SELL
                 print('SELL:', stock_symbol, time_msg)
                 email('SELL', stock_symbol, email_message)
 
@@ -77,9 +79,11 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                 tpts.create_order('TPTS', 'SELL')
                 all.create_order('ALL', 'SELL')
 
+                time.sleep(1260)
+
         except Exception as e:
             print ('EXCEPTION ERROR', time_msg + '\n' + str(e))
             time.sleep(random.randint(30, 150))
-            email('EXCEPTION', 'ERROR', str(e), 'private')
+            email('MAIN BOT - EXCEPTION', 'ERROR', str(e), 'private')
 
         time.sleep(600)
