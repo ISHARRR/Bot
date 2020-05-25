@@ -11,6 +11,7 @@ import random
 import recipients
 import oanda
 import smtplib
+import traceback
 
 
 def timezone(zone):
@@ -88,8 +89,8 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                             break
 
                     except Exception as e :
-                        print ('INNER LOOP EXCEPTION ERROR', time_msg + '\n' + str(e))
-                        email('TEST BOT: EXCEPTION ERROR -', 'INNER LOOP', str(e), 'private')
+                        print ('INNER LOOP EXCEPTION ERROR', time_msg + '\n' + str(traceback.format_exc()) + '\n' + str(e))
+                        email('TEST BOT: EXCEPTION ERROR -', 'INNER LOOP', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
                         time.sleep(random.randint(30, 150))
 
                     time.sleep(540)
@@ -124,15 +125,15 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                             break
 
                     except Exception as e :
-                        print ('INNER LOOP EXCEPTION ERROR', time_msg + '\n' + str(e))
-                        email('TEST BOT: EXCEPTION ERROR -', 'INNER LOOP', str(e), 'private')
+                        print ('INNER LOOP EXCEPTION ERROR', time_msg + '\n' + str(traceback.format_exc()) + '\n' + str(e))
+                        email('TEST BOT: EXCEPTION ERROR -', 'INNER LOOP', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
                         time.sleep(random.randint(30, 150))
 
                     time.sleep(540)
 
         except Exception as e :
-            print ('EXCEPTION ERROR', time_msg + '\n' + str(e))
-            email('TEST BOT: EXCEPTION', 'ERROR', str(e), 'private')
+            print ('EXCEPTION ERROR', time_msg + '\n' + str(traceback.format_exc()) + '\n' + str(e))
+            email('TEST BOT: EXCEPTION', 'ERROR', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
             time.sleep(random.randint(30, 150))
 
         time.sleep(600)

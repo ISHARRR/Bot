@@ -10,7 +10,8 @@ import pytz
 import random
 import recipients
 import oanda
-import smtplibg
+import smtplib
+import traceback
 
 
 def timezone(zone):
@@ -82,8 +83,8 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                 time.sleep(1260)
 
         except Exception as e:
-            print ('EXCEPTION ERROR', time_msg + '\n' + str(e))
+            print ('EXCEPTION ERROR', time_msg + '\n' + str(traceback.format_exc()) + '\n' + str(e))
             time.sleep(random.randint(30, 150))
-            email('MAIN BOT - EXCEPTION', 'ERROR', str(e), 'private')
+            email('MAIN BOT - EXCEPTION', 'ERROR', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
 
         time.sleep(600)
