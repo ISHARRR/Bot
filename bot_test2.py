@@ -43,7 +43,7 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     time_msg = 'NY-Time:' + '(' + ny_time +') ' + '| UK-Time:' + '(' + uk_time +')'
     print(stock_symbol, 'Running...', time_msg )
 
-    cross = oanda.Oanda('101-004-14591208-007', oanda_stock_symbol, one_pip, 1)
+    cross = oanda.Oanda('101-004-14591208-006', oanda_stock_symbol, one_pip, 1)
 
     buy_id = 0
     sell_id = 0
@@ -80,15 +80,15 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                                 cross.close_order(buy_id)
                                 email('Order Closed - test', str(buy_id), 'Check if order has been closed', 'private')
                                 buy_id = 0
-                        # if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_ema_slow > current_sma200)): # SELL
+                        if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_ema_slow > current_sma200)): # SELL
                             print('Trade ID:', buy_id, 'Status: CLOSED' + '\n')
                             print('SELL:', stock_symbol, time_msg)
                             # email('SELL', stock_symbol, email_message)
                             email('SELL - test', stock_symbol, email_message, 'private')
                             sell_id = cross.create_order('CROSS', 'SELL')
                             break
-                        # elif ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_ema_slow < current_sma200)): # breakout
-                        #     break
+                        elif ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_ema_slow < current_sma200)): # breakout
+                            break
 
                     except Exception as e :
                         print ('INNER LOOP EXCEPTION ERROR', time_msg + '\n' + str(traceback.format_exc()) + '\n' + str(e))
@@ -118,15 +118,15 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                             if sell_id != 0:
                                 cross.close_order(sell_id)
                                 sell_id = 0
-                        # if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_ema_slow < current_sma200)):  # BUY
+                        if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_ema_slow < current_sma200)):  # BUY
                             print('Trade ID:', buy_id, 'Status: CLOSED' + '\n')
                             print('BUY:', stock_symbol, time_msg)
                             # email('BUY', stock_symbol, email_message)
                             email('BUY - test', stock_symbol, email_message, 'private')
                             buy_id = cross.create_order('CROSS', 'BUY')
                             break
-                        # elif ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_ema_slow > current_sma200)): # breakout
-                        #     break
+                        elif ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_ema_slow > current_sma200)): # breakout
+                            break
 
                     except Exception as e :
                         print ('INNER LOOP EXCEPTION ERROR', time_msg + '\n' + str(traceback.format_exc()) + '\n' + str(e))
