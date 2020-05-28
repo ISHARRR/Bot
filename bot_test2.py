@@ -43,7 +43,7 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     time_msg = 'NY-Time:' + '(' + ny_time +') ' + '| UK-Time:' + '(' + uk_time +')'
     print(stock_symbol, 'Running...', time_msg )
 
-    cross = oanda.Oanda('101-004-14591208-006', oanda_stock_symbol, one_pip, 1)
+    cross = oanda.Oanda('101-004-14591208-007', oanda_stock_symbol, one_pip, 1)
 
     buy_id = 0
     sell_id = 0
@@ -63,10 +63,11 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                 print('BUY:', stock_symbol, time_msg)
                 # email('BUY', stock_symbol, email_message)
                 email('BUY - test', stock_symbol, email_message, 'private')
-                if buy_id != 0:
-                    cross.close_order(buy_id)
-                    print('Trade ID:', buy_id, 'Status: CLOSED' + '\n')
-                    buy_id = 0
+                if sell_id != 0:
+                    cross.close_order(sell_id)
+                    print('Trade ID:', sell_id, 'Status: CLOSED' + '\n')
+                    email('Order Closed - test', str(sell_id), 'Check if order has been closed', 'private')
+                    sell_id = 0
                 buy_id = cross.create_order('CROSS', 'BUY')
 
                 while True:
@@ -78,6 +79,7 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                         if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow)): # SELL
                             if buy_id != 0:
                                 cross.close_order(buy_id)
+                                print('Trade ID:', buy_id, 'Status: CLOSED' + '\n')
                                 email('Order Closed - test', str(buy_id), 'Check if order has been closed', 'private')
                                 buy_id = 0
                         if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_ema_slow > current_sma200)): # SELL
@@ -101,11 +103,11 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                 print('SELL:', stock_symbol, time_msg)
                 # email('SELL', stock_symbol, email_message)
                 email('SELL - test', stock_symbol, email_message, 'private')
-                if sell_id != 0:
-                    cross.close_order(sell_id)
-                    print('Trade ID:', sell_id, 'Status: CLOSED' + '\n')
+                if buy_id != 0:
+                    cross.close_order(buy_id)
+                    print('Trade ID:', buy_id, 'Status: CLOSED' + '\n')
                     email('Order Closed - test', str(buy_id), 'Check if order has been closed', 'private')
-                    sell_id = 0
+                    buy_id = 0
                 sell_id = cross.create_order('CROSS', 'SELL')
 
                 while True:
@@ -117,6 +119,8 @@ def ema(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                         if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow)):  # BUY
                             if sell_id != 0:
                                 cross.close_order(sell_id)
+                                print('Trade ID:', sell_id, 'Status: CLOSED' + '\n')
+                                email('Order Closed - test', str(sell_id), 'Check if order has been closed', 'private')
                                 sell_id = 0
                         if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_ema_slow < current_sma200)):  # BUY
                             print('Trade ID:', buy_id, 'Status: CLOSED' + '\n')
