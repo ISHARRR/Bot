@@ -1,9 +1,3 @@
-
-num = 1
-
-if num > 5:
-    print (1)
-elif num > 0 and num < 6:
-    print (2)
-elif num > 0 and num > 6:
-    print (3)
+import os
+window_len = os.popen('stty size', 'r').read().split()
+print(' EXCEPTION ERROR '.center(int(window_len[1]), '*'))
