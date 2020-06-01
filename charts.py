@@ -13,12 +13,16 @@ import smtplib
 def ema_graph(stock_symbol, api_key):
 
     # variable for indicator
-    ti = TechIndicators(key = api_key, output_format='pandas')
+    ti = TechIndicators(key=api_key, output_format='pandas')
 
-    data_ema5, meta_data_ema = ti.get_ema(symbol = stock_symbol, interval='1min', time_period=300)
-    data_ema15, meta_data_ema = ti.get_ema(symbol = stock_symbol, interval='1min', time_period=900)
-    data_sma100, meta_data_ema = ti.get_sma(symbol = stock_symbol, interval='5min', time_period=600)
-    data_sma200, meta_data_ema = ti.get_sma(symbol= stock_symbol, interval='5min', time_period=1200)
+    data_ema5, meta_data_ema = ti.get_ema(
+        symbol=stock_symbol, interval='1min', time_period=300)
+    data_ema15, meta_data_ema = ti.get_ema(
+        symbol=stock_symbol, interval='1min', time_period=900)
+    data_sma100, meta_data_ema = ti.get_sma(
+        symbol=stock_symbol, interval='5min', time_period=600)
+    data_sma200, meta_data_ema = ti.get_sma(
+        symbol=stock_symbol, interval='5min', time_period=1200)
 
     # print(data_sma100['SMA'].iloc[-1])
     # print(data_sma200['SMA'].iloc[-1])
@@ -34,21 +38,22 @@ def ema_graph(stock_symbol, api_key):
 def macd_graph(stock_symbol, api_key):
 
     # variable for indicator
-    ti = TechIndicators(key = api_key, output_format='pandas')
+    ti = TechIndicators(key=api_key, output_format='pandas')
     # ema
     data_macd, meta_data_ema = ti.get_macd(
-        symbol = stock_symbol,
-        series_type = 'close',
+        symbol=stock_symbol,
+        series_type='close',
         interval='5min',
         fastperiod=12,
         slowperiod=26,
         signalperiod=9
-        )
+    )
 
     plt.plot(data_macd)
 
     plt.title(stock_symbol)
     plt.show()
+
 
 def main():
     # 1
@@ -60,5 +65,6 @@ def main():
     # 4
     #ema_graph('GBPJPY', '60I75BKCK0OFGNKA')
     # 5
+
 
 main()

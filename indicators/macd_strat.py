@@ -4,16 +4,16 @@ from alpha_vantage.timeseries import TimeSeries
 
 def macd(stock_symbol, api_key):
     # variable for indicator
-    ti = TechIndicators(key = api_key, output_format='pandas')
+    ti = TechIndicators(key=api_key, output_format='pandas')
     # ema
     data_macd, meta_data_ema = ti.get_macd(
-        symbol = stock_symbol,
-        series_type = 'close',
+        symbol=stock_symbol,
+        series_type='close',
         interval='5min',
         fastperiod=12,
         slowperiod=26,
         signalperiod=9
-        )
+    )
 
     # getting the most current value aka the n (tail)
     current_macd = data_macd['MACD'].iloc[-1]
