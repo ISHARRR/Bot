@@ -40,11 +40,14 @@ def email(buyorsell, stock_symbol, context, privacy='public'):
         smtp.send_message(msg)
 
 
-def exception_alert():
+def exception_alert(e):
+    ny_time = timezone('America/New_york')
+    uk_time = timezone('Europe/London')
+    time_msg = 'NY-Time:' + '(' + ny_time +') ' + '| UK-Time:' + '(' + uk_time +')'
     window_len = os.popen('stty size', 'r').read().split()
     print (' EXCEPTION ERROR '.center(int(window_len[1]), '*'))
     print ('EXCEPTION ERROR', time_msg + '\n' + str(traceback.format_exc()) + '\n' + str(e) + '\n')
-    print (' EXCEPTION ERROR '.center(int(window_len[1]), '*' + '\n' +))
+    print (' EXCEPTION ERROR '.center(int(window_len[1]), '*') + '\n')
 
 
 def running_msg(stock_symbol):
@@ -102,7 +105,7 @@ def trading_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                 time.sleep(1260)
 
         except Exception as e:
-            exception_alert()
+            exception_alert(e)
             time.sleep(random.randint(30, 150))
             email('MAIN BOT - EXCEPTION', 'ERROR', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
 
@@ -126,10 +129,20 @@ def trading_bot_test(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
             if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_ema_slow < current_sma200)): # BUY
                 trade_msg(stock_symbol, 'BUY')
+
+                # test
+                print('buy ID if: ', buy_id)
+                print('sell ID if: ', sell_id)
+                # test
+
                 # email('BUY', stock_symbol, email_message)
                 email('BUY - test', stock_symbol, email_message, 'private')
                 if sell_id != 0:
+
+                    # test
                     print('sell ID out: ', sell_id)
+                    # test
+
                     cross.close_order(sell_id)
                     print('Trade ID:', sell_id, 'Status: CLOSED' + '\n')
                     email('Order Closed - test', str(sell_id), 'Check if order has been closed', 'private')
@@ -144,8 +157,18 @@ def trading_bot_test(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                         current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.ema_10_30(stock_symbol, api_key)
 
                         if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow)): # SELL
+
+                            # test
+                            print('buy ID inif: ', buy_id)
+                            print('sell ID inif: ', sell_id)
+                            # test
+
                             if buy_id != 0:
+
+                                # test
                                 print('buy ID inner: ', buy_id)
+                                # test
+
                                 cross.close_order(buy_id)
                                 print('Trade ID:', buy_id, 'Status: CLOSED' + '\n')
                                 email('Order Closed - test', str(buy_id), 'Check if order has been closed', 'private')
@@ -156,24 +179,38 @@ def trading_bot_test(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                             # email('SELL', stock_symbol, email_message)
                             email('SELL - test', stock_symbol, email_message, 'private')
                             sell_id = cross.create_order('CROSS', 'SELL')
+
+                            # test
                             print('sell ID inner: ', sell_id)
+                            # test
+
                             break
                         # elif ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_ema_slow < current_sma200)): # breakout
                         #     break
 
                     except Exception as e :
-                        exception_alert()
+                        exception_alert(e)
                         email('TEST BOT: EXCEPTION ERROR -', 'INNER LOOP', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
                         time.sleep(random.randint(30, 150))
 
                     time.sleep(540)
 
             if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_ema_slow > current_sma200)): # SELL
+
+                # test
+                print('buy ID if: ', buy_id)
+                print('sell ID if: ', sell_id)
+                # test
+
                 trade_msg(stock_symbol, 'SELL')
                 # email('SELL', stock_symbol, email_message)
                 email('SELL - test', stock_symbol, email_message, 'private')
                 if buy_id != 0:
+
+                    # test
                     print('buy ID out:', buy_id)
+                    # test
+
                     cross.close_order(buy_id)
                     print('Trade ID:', buy_id, 'Status: CLOSED' + '\n')
                     email('Order Closed - test', str(buy_id), 'Check if order has been closed', 'private')
@@ -187,8 +224,18 @@ def trading_bot_test(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                         current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.ema_10_30(stock_symbol, api_key)
 
                         if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow)):  # BUY
+
+                            # test
+                            print('buy ID inif: ', buy_id)
+                            print('sell ID inif: ', sell_id)
+                            # test
+
                             if sell_id != 0:
+
+                                # test
                                 print('sell ID inner:', sell_id)
+                                # test
+
                                 cross.close_order(sell_id)
                                 print('Trade ID:', sell_id, 'Status: CLOSED' + '\n')
                                 email('Order Closed - test', str(sell_id), 'Check if order has been closed', 'private')
@@ -199,20 +246,24 @@ def trading_bot_test(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                             # email('BUY', stock_symbol, email_message)
                             email('BUY - test', stock_symbol, email_message, 'private')
                             buy_id = cross.create_order('CROSS', 'BUY')
+
+                            # test
                             print('buy ID inner:', buy_id)
+                            # test
+
                             break
                         # elif ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_ema_slow > current_sma200)): # breakout
                         #     break
 
                     except Exception as e :
-                        exception_alert()
+                        exception_alert(e)
                         email('TEST BOT: EXCEPTION ERROR -', 'INNER LOOP', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
                         time.sleep(random.randint(30, 150))
 
                     time.sleep(540)
 
         except Exception as e :
-            exception_alert()
+            exception_alert(e)
             email('TEST BOT: EXCEPTION', 'ERROR', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
             time.sleep(random.randint(30, 150))
 
@@ -234,11 +285,21 @@ def trading_bot_test1(stock_symbol, one_pip, api_key, oanda_stock_symbol):
             email_message = 'Crossover Strategy'
 
             if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_ema_slow < current_sma200)): # BUY
+
+                # test
+                print('buy ID if: ', buy_id)
+                print('sell ID if: ', sell_id)
+                # test
+
                 trade_msg(stock_symbol, 'BUY')
                 # email('BUY', stock_symbol, email_message)
                 email('BUY - test', stock_symbol, email_message, 'private')
                 if sell_id != 0:
+
+                    # test
                     print('sell ID out: ', sell_id)
+                    # test
+
                     cross.close_order(sell_id)
                     print('Trade ID:', sell_id, 'Status: CLOSED' + '\n')
                     email('Order Closed - test', str(sell_id), 'Check if order has been closed', 'private')
@@ -252,35 +313,71 @@ def trading_bot_test1(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                         current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.ema_10_30(stock_symbol, api_key)
 
                         if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow)): # SELL
+
+                            # test
+                            print('buy ID if: ', buy_id)
+                            print('sell ID if: ', sell_id)
+                            # test
+
                             if buy_id != 0:
+
+                                # test
                                 print('buy ID in: ', buy_id)
+                                # test
+
                                 cross.close_order(buy_id)
                                 print('Trade ID:', buy_id, 'Status: CLOSED' + '\n')
                                 email('Order Closed - test', str(buy_id), 'Check if order has been closed', 'private')
                                 buy_id = 0
                         if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_ema_slow > current_sma200)): # SELL
                             trade_msg(stock_symbol, 'SELL')
+
+                            # test
+                            print('buy ID inif: ', buy_id)
+                            print('sell ID inif: ', sell_id)
+                            # test
+
                             # email('SELL', stock_symbol, email_message)
                             email('SELL - test', stock_symbol, email_message, 'private')
                             sell_id = cross.create_order('CROSS', 'SELL')
+
+                            # test
                             print('sell ID in: ', sell_id)
+                            # test
+
                             break
                         elif ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_ema_slow < current_sma200)): # breakout
+
+                            # test
+                            print('buy ID elif: ', buy_id)
+                            print('sell ID elif: ', sell_id)
+                            # test
+
                             break
 
                     except Exception as e :
-                        exception_alert()
+                        exception_alert(e)
                         email('TEST BOT: EXCEPTION ERROR -', 'INNER LOOP', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
                         time.sleep(random.randint(30, 150))
 
                     time.sleep(540)
 
             if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_ema_slow > current_sma200)): # SELL
+
+                # test
+                print('buy ID if: ', buy_id)
+                print('sell ID if: ', sell_id)
+                # test
+
                 trade_msg(stock_symbol, 'SELL')
                 # email('SELL', stock_symbol, email_message)
                 email('SELL - test', stock_symbol, email_message, 'private')
                 if buy_id != 0:
-                    print('buy ID out: ', buy_id) 
+
+                    # test
+                    print('buy ID out: ', buy_id)
+                    # test
+
                     cross.close_order(buy_id)
                     print('Trade ID:', buy_id, 'Status: CLOSED' + '\n')
                     email('Order Closed - test', str(buy_id), 'Check if order has been closed', 'private')
@@ -294,29 +391,55 @@ def trading_bot_test1(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                         current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.ema_10_30(stock_symbol, api_key)
 
                         if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow)):  # BUY
+
+                            # test
+                            print('buy ID inif: ', buy_id)
+                            print('sell ID inif: ', sell_id)
+                            # test
+
                             if sell_id != 0:
+                                # test
+                                print('sell ID in: ', sell_id)
+                                # test
                                 cross.close_order(sell_id)
                                 print('Trade ID:', sell_id, 'Status: CLOSED' + '\n')
                                 email('Order Closed - test', str(sell_id), 'Check if order has been closed', 'private')
                                 sell_id = 0
                         if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_ema_slow < current_sma200)):  # BUY
+
+                            # test
+                            print('buy ID inif: ', buy_id)
+                            print('sell ID inif: ', sell_id)
+                            # test
+
                             trade_msg(stock_symbol, 'BUY')
                             # email('BUY', stock_symbol, email_message)
                             email('BUY - test', stock_symbol, email_message, 'private')
                             buy_id = cross.create_order('CROSS', 'BUY')
+
+                            # test
+                            print('buy ID in: ', buy_id)
+                            # test
+
                             break
                         elif ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_ema_slow > current_sma200)): # breakout
+
+                            # test
+                            print('buy ID elif: ', buy_id)
+                            print('sell ID elif: ', sell_id)
+                            # test
+
                             break
 
                     except Exception as e :
-                        exception_alert()
+                        exception_alert(e)
                         email('TEST BOT: EXCEPTION ERROR -', 'INNER LOOP', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
                         time.sleep(random.randint(30, 150))
 
                     time.sleep(540)
 
         except Exception as e :
-            exception_alert()
+            exception_alert(e)
             email('TEST BOT: EXCEPTION', 'ERROR', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
             time.sleep(random.randint(30, 150))
 
@@ -353,7 +476,7 @@ def trading_bot_test2(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                     time.sleep(1260)
 
             except Exception as e:
-                exception_alert()
+                exception_alert(e)
                 email('MAIN BOT - EXCEPTION', 'ERROR', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
                 time.sleep(random.randint(30, 150))
 
