@@ -180,7 +180,7 @@ class Oanda:
                     stopLossOnFill=StopLossDetails(price=STOP_LOSS_PRICE).data,
                     trailingStopLossOnFill=TrailingStopLossDetails(distance=TRAILING_STOP_DISTANCE).data,
                 )
-            elif order_type == 'TPSP':
+            elif order_type == 'TPSL':
                 mktOrder = MarketOrderRequest(
                     instrument = self.instrument,
                     units = UNIT_AMOUNT,
