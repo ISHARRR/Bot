@@ -19,7 +19,7 @@ def crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     database = 'crossDB'
 
     buy_id = db.getDB('BUY', database)
-    sell_id = db.getDB('SELL' database)
+    sell_id = db.getDB('SELL', database)
 
     while True:
         try:
