@@ -13,7 +13,7 @@ import traceback
 def crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     bot.running_msg(stock_symbol)
 
-    cross = oanda.Oanda('101-004-14591208-007', oanda_stock_symbol, one_pip, 1)
+    cross = oanda.Oanda('101-004-14591208-007', oanda_stock_symbol, one_pip, 0.95)
 
     buy_id = 0
     sell_id = 0
@@ -66,7 +66,7 @@ def crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                                   (str(traceback.format_exc()) + '\n' + str(e)), 'private')
                         time.sleep(random.randint(60, 150))
 
-                    time.sleep(540)
+                    time.sleep(240)
 
             if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow)):  # SELL
                 bot.trade_msg(stock_symbol, 'SELL')
@@ -110,7 +110,7 @@ def crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                                   (str(traceback.format_exc()) + '\n' + str(e)), 'private')
                         time.sleep(random.randint(60, 150))
 
-                    time.sleep(540)
+                    time.sleep(240)
 
         except Exception as e:
             bot.exception_alert(e)
@@ -118,4 +118,4 @@ def crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                       (str(traceback.format_exc()) + '\n' + str(e)), 'private')
             time.sleep(random.randint(60, 150))
 
-        time.sleep(600)
+        time.sleep(300)

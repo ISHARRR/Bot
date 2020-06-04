@@ -6,9 +6,9 @@ def ema_10_30(stock_symbol, api_key):
     # variable for indicator
     ti = TechIndicators(key=api_key, output_format='pandas')
     # 10 day ema
-    fast_period = 300
+    fast_period = 150
     # 30 day ema
-    slow_period = 900
+    slow_period = 450
     # ema
     data_ema_fast, meta_data_ema = ti.get_ema(
         symbol=stock_symbol, series_type='close', interval='1min', time_period=fast_period)
