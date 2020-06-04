@@ -16,7 +16,7 @@ def crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     bot.running_msg(stock_symbol)
 
     cross = oanda.Oanda('101-004-14591208-007', oanda_stock_symbol, one_pip, 0.95)
-    database = 'crossDB'
+    database = 'trades_database/crossDB'
 
     buy_id = db.getDB('BUY', database)
     sell_id = db.getDB('SELL', database)

@@ -4,9 +4,6 @@ import shelve
 def updateDB(buyorsell, data, file):
     d = shelve.open(file, writeback=True)
 
-    d['buy_id'] = 0
-    d['sell_id'] = 0
-
     try:
         if buyorsell == 'BUY':
             d['buy_id'] = data
@@ -29,7 +26,9 @@ def getDB(buyorsell, file):
         d.close()
 
 
-# print(updateDB('BUY', 51, 'crossDB'))
-# updateDB('SELL', 0, 'smacrossDB')
+# print(updateDB('BUY', 111, 'crossDB'))
+# print(updateDB('BUY', 51, 'smacrossDB'))
+# print(updateDB('SELL', 0, 'crossDB'))
+# print(updateDB('SELL', 0, 'smacrossDB'))
 #
 # print(getDB('BUY', 'crossDB'))
