@@ -12,9 +12,7 @@ from datetime import date
 
 import pytz
 import recipients
-import oanda
 import smtplib
-import traceback
 import os
 
 
@@ -47,7 +45,8 @@ def exception_alert(e):
     time_msg = 'NY-Time:' + '(' + ny_time +') ' + '| UK-Time:' + '(' + uk_time +')'
     window_len = os.popen('stty size', 'r').read().split()
     print (' EXCEPTION ERROR '.center(int(window_len[1]), '*'))
-    print ('EXCEPTION ERROR', time_msg + '\n' + str(traceback.format_exc()) + '\n' + str(e) + '\n')
+    print ('EXCEPTION ERROR', time_msg + '\n' + str(e) + '\n')
+    # print ('EXCEPTION ERROR', time_msg + '\n' + str(traceback.format_exc()) + '\n' + str(e) + '\n')
     print (' EXCEPTION ERROR '.center(int(window_len[1]), '*') + '\n')
 
 
@@ -74,6 +73,7 @@ def basic_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
 def crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     crossover.crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol)
+
 
 def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     sma_crossover.sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol)

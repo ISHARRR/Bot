@@ -7,6 +7,7 @@ import bot
 import oanda
 import time
 import random
+import traceback
 
 
 def basic_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
@@ -18,11 +19,12 @@ def basic_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     while True:
         try:
             current_sma200 = ema_sma.sma_200(stock_symbol, api_key)
-            current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.ema_10_30(stock_symbol, api_key)
+            current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.ema_10_30(
+                stock_symbol, api_key)
 
             email_message = 'EMA Crossover Strategy - 30 min timeframe'
 
-            if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_ema_slow < current_sma200)): # BUY
+            if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_ema_slow > current_sma200)):  # BUY
                 bot.trade_msg(stock_symbol, 'BUY')
                 bot.email('BUY', stock_symbol, email_message)
 
@@ -31,7 +33,7 @@ def basic_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
                 time.sleep(1260)
 
-            if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_ema_slow > current_sma200)): # SELL
+            if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_ema_slow < current_sma200)):  # SELL
                 bot.trade_msg(stock_symbol, 'SELL')
                 bot.email('SELL', stock_symbol, email_message)
 
@@ -43,6 +45,7 @@ def basic_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
         except Exception as e:
             bot.exception_alert(e)
             time.sleep(random.randint(60, 150))
-            bot.email('MAIN BOT - EXCEPTION', 'ERROR', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
+            bot.email('MAIN BOT - EXCEPTION', 'ERROR',
+                      (str(traceback.format_exc()) + '\n' + str(e)), 'private')
 
         time.sleep(600)
