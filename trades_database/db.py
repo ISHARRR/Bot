@@ -1,6 +1,12 @@
 import shelve
 
 
+def createDB(file, buy_id=0, sell_id=0):
+    with shelve.open(file) as d:
+        d['buy_id'] = buy_id
+        d['sell_id'] = sell_id
+
+
 def updateDB(buyorsell, data, file):
     d = shelve.open(file, writeback=True)
 
