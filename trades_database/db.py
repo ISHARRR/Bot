@@ -1,40 +1,58 @@
+from sys import platform
+
+
 import shelve
+import pathlib
+
+
+def getDB(buyorsell, file):
+    with shelve.open(file) as d:
+        if buyorsell == 'BUY':
+            id = d['key']['buy_id']
+            return id
+        elif buyorsell == 'SELL':
+            id = d['key']['sell_id']
+            return id
 
 
 def createDB(file, buy_id=0, sell_id=0):
-    with shelve.open(file) as d:
-        d['buy_id'] = buy_id
-        d['sell_id'] = sell_id
+    db = pathlib.Path(file + '.db').exists()
+    bak = pathlib.Path(file + '.bak').exists()
+    dat = pathlib.Path(file + '.dat').exists()
+    dirr = pathlib.Path(file + '.dir').exists()
+
+    if platform == "linux":
+        if bak or dat or dirr:
+            pass
+        else:
+            with shelve.open(file) as d:
+                d['key'] = { 'buy_id': buy_id, 'sell_id': sell_id }
+    elif platform == "darwin":
+        if db:
+            pass
+        else:
+            with shelve.open(file) as d:
+                d['key'] = { 'buy_id': buy_id, 'sell_id': sell_id }
+
 
 
 def updateDB(buyorsell, data, file):
-    d = shelve.open(file, writeback=True)
-
-    try:
+    with shelve.open(file, writeback=True) as d:
         if buyorsell == 'BUY':
-            d['buy_id'] = data
-            return int(d['buy_id'])
+            d['key']['buy_id'] = data
+            id = d['key']['buy_id']
+            return id
         elif buyorsell == 'SELL':
-            d['sell_id'] = data
-            return int(d['sell_id'])
-    finally:
-        d.close()
-
-def getDB(buyorsell, file):
-    d = shelve.open(file, writeback=True)
-
-    try:
-        if buyorsell == 'BUY':
-            return int(d['buy_id'])
-        elif buyorsell == 'SELL':
-            return int(d['sell_id'])
-    finally:
-        d.close()
+            d['key']['sell_id'] = data
+            id = d['key']['sell_id']
+            return id
 
 
+# createDB('crossDB')
+# print(getDB('BUY', 'crossDB'))
 # print(updateDB('BUY', 111, 'crossDB'))
-# print(updateDB('BUY', 51, 'smacrossDB'))
-# print(updateDB('SELL', 0, 'crossDB'))
-# print(updateDB('SELL', 0, 'smacrossDB'))
+# # print(updateDB('SELL', 0, 'crossDB'))
+# # # print(updateDB('BUY', 51, 'smacrossDB'))
+# # # print(updateDB('SELL', 0, 'smacrossDB'))
 #
 # print(getDB('BUY', 'crossDB'))
