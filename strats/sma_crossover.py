@@ -17,7 +17,7 @@ def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     account = '101-004-14591208-006'
 
     cross = oanda.Oanda(account, oanda_stock_symbol, one_pip, 0.95)
-    database = 'trades_database/crossDB'
+    database = 'trades_database/sma_crossDB'
 
     db.createDB(database)
 
@@ -42,10 +42,11 @@ def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                     print('Trade ID:', sell_id, 'Status: CLOSED' + '\n')
                     email('Order Closed - test', str(sell_id),
                           'Check if order has been closed', 'private')
-                    sell_id = db.update('SELL', 0, database)
+                    sell_id = db.updateDB('SELL', 0, database)
 
-                trade_id = cross.create_order('CROSS', 'BUY')
-                buy_id = db.update('BUY', trade_id, database)
+                if cross.get_open_trade_count() < 1:
+                    trade_id = cross.create_order('CROSS', 'BUY')
+                    buy_id = db.updateDB('BUY', trade_id, database)
 
                 while True:
                     time.sleep(60)
@@ -62,7 +63,7 @@ def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                                       'Status: CLOSED' + '\n')
                                 bot.email('Order Closed - test', str(buy_id),
                                           'Check if order has been closed', 'private')
-                                buy_id = db.update('BUY', 0, database)
+                                buy_id = db.updateDB('BUY', 0, database)
 
                         if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_ema_slow > current_sma200)):  # SELL
                             bot.trade_msg(stock_symbol, 'BUY')
@@ -70,8 +71,9 @@ def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                             bot.email('BUY - test', stock_symbol,
                                       email_message, 'private')
 
-                            trade_id = cross.create_order('CROSS', 'SELL')
-                            sell_id = db.update('SELL', trade_id, database)
+                            if cross.get_open_trade_count() < 1:
+                                trade_id = cross.create_order('CROSS', 'SELL')
+                                sell_id = db.updateDB('SELL', trade_id, database)
 
                             break
                         if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_ema_slow < current_sma200)):  # breakout
@@ -96,10 +98,11 @@ def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                     print('Trade ID:', buy_id, 'Status: CLOSED' + '\n')
                     bot.email('Order Closed - test', str(buy_id),
                               'Check if order has been closed', 'private')
-                    buy_id = db.update('BUY', 0, database)
+                    buy_id = db.updateDB('BUY', 0, database)
 
-                trade_id = cross.create_order('CROSS', 'SELL')
-                sell_id = db.update('SELL', trade_id, database)
+                if cross.get_open_trade_count() < 1:
+                    trade_id = cross.create_order('CROSS', 'SELL')
+                    sell_id = db.updateDB('SELL', trade_id, database)
 
                 while True:
                     time.sleep(60)
@@ -115,7 +118,7 @@ def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                                       'Status: CLOSED' + '\n')
                                 bot.email('Order Closed - test', str(sell_id),
                                           'Check if order has been closed', 'private')
-                                sell_id = db.update('SELL', 0, database)
+                                sell_id = db.updateDB('SELL', 0, database)
 
                         if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_ema_slow > current_sma200)):  # BUY
                             bot.trade_msg(stock_symbol, 'BUY')
@@ -123,8 +126,9 @@ def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                             bot.email('BUY - test', stock_symbol,
                                       email_message, 'private')
 
-                            trade_id = cross.create_order('CROSS', 'BUY')
-                            buy_id = db.update('BUY', trade_id, database)
+                            if cross.get_open_trade_count() < 1:
+                                trade_id = cross.create_order('CROSS', 'BUY')
+                                buy_id = db.updateDB('BUY', trade_id, database)
 
                             break
                         if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_ema_slow < current_sma200)):  # breakout

@@ -42,12 +42,11 @@ def crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                     bot.email('Order Closed - test', str(sell_id),
                               'Check if order has been closed', 'private')
 
-                    sell_id = db.update('SELL', 0, database)
+                    sell_id = db.updateDB('SELL', 0, database)
 
-                trade_id = cross.create_order('CROSS', 'BUY')
-                buy_id = db.update('BUY', trade_id, database)
-
-                print('buy ID out: ', buy_id)
+                if cross.get_open_trade_count() < 1:
+                    trade_id = cross.create_order('CROSS', 'BUY')
+                    buy_id = db.updateDB('BUY', trade_id, database)
 
                 while True:
                     time.sleep(60)
@@ -62,15 +61,16 @@ def crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                                       'Status: CLOSED' + '\n')
                                 bot.email('Order Closed - test', str(buy_id),
                                           'Check if order has been closed', 'private')
-                                buy_id = db.update('BUY', 0, database)
+                                buy_id = db.updateDB('BUY', 0, database)
 
                             bot.trade_msg(stock_symbol, 'SELL')
                             # email('SELL', stock_symbol, email_message)
                             bot.email('SELL - test', stock_symbol,
                                       email_message, 'private')
 
-                            trade_id = cross.create_order('CROSS', 'SELL')
-                            sell_id = db.update('SELL', trade_id, database)
+                            if cross.get_open_trade_count() < 1:
+                                trade_id = cross.create_order('CROSS', 'SELL')
+                                sell_id = db.updateDB('SELL', trade_id, database)
 
                             break
 
@@ -92,10 +92,11 @@ def crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                     print('Trade ID:', buy_id, 'Status: CLOSED' + '\n')
                     bot.email('Order Closed - test', str(buy_id),
                               'Check if order has been closed', 'private')
-                    buy_id = db.update('BUY', 0, database)
+                    buy_id = db.updateDB('BUY', 0, database)
 
-                trade_id = cross.create_order('CROSS', 'SELL')
-                sell_id = db.update('SELL', trade_id, database)
+                if cross.get_open_trade_count() < 1:
+                    trade_id = cross.create_order('CROSS', 'SELL')
+                    sell_id = db.updateDB('SELL', trade_id, database)
 
                 while True:
                     time.sleep(60)
@@ -111,15 +112,17 @@ def crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                                       'Status: CLOSED' + '\n')
                                 bot.email('Order Closed - test', str(sell_id),
                                           'Check if order has been closed', 'private')
-                                sell_id = db.update('SELL', 0, database)
+                                sell_id = db.updateDB('SELL', 0, database)
 
                             bot.trade_msg(stock_symbol, 'BUY')
                             # email('BUY', stock_symbol, email_message)
                             bot.email('BUY - test', stock_symbol,
                                       email_message, 'private')
 
-                            trade_id = cross.create_order('CROSS', 'BUY')
-                            buy_id = db.update('BUY', trade_id, database)
+                            if cross.get_open_trade_count() < 1:
+                                trade_id = cross.create_order('CROSS', 'BUY')
+                                buy_id = db.updateDB('BUY', trade_id, database)
+
                             break
 
                     except Exception as e:

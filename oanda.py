@@ -168,8 +168,6 @@ class Oanda:
         RISK_PERCENTAGE = self.risk_percentage
         OPEN_TRADE_COUNT = self.get_open_trade_count()
 
-        print(UNIT_AMOUNT, RISK_PERCENTAGE, OPEN_TRADE_COUNT)
-
         if (RISK_PERCENTAGE >= 0.5) and (OPEN_TRADE_COUNT >= 1):
             pass
         else:
