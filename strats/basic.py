@@ -14,13 +14,19 @@ def basic_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     bot.running_msg(stock_symbol)
 
     ts = oanda.Oanda('101-004-14591208-003', oanda_stock_symbol, one_pip, 0.95)
-    tpts = oanda.Oanda('101-004-14591208-004', oanda_stock_symbol, one_pip, 0.95)
+    # tpts = oanda.Oanda('101-004-14591208-004', oanda_stock_symbol, one_pip, 0.95)
+
+    fast_ema = 600
+    slow_ema = 1650
+
+    sma_period = 1200
 
     while True:
         try:
-            current_sma200 = ema_sma.sma_200(stock_symbol, api_key)
-            current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.ema_10_30(
-                stock_symbol, api_key)
+            current_sma200 = ema_sma.sma(stock_symbol, api_key, sma_period)
+            current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.double_ema(
+                stock_symbol, api_key, fast_ema, slow_ema)
+
 
             email_message = 'EMA Crossover Strategy - 30 min timeframe'
 
@@ -29,7 +35,7 @@ def basic_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                 bot.email('BUY', stock_symbol, email_message)
 
                 ts.create_order('TS', 'BUY')
-                tpts.create_order('TPTS', 'BUY')
+                # tpts.create_order('TPTS', 'BUY')
 
                 time.sleep(1560)
 
@@ -38,14 +44,13 @@ def basic_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                 bot.email('SELL', stock_symbol, email_message)
 
                 ts.create_order('TS', 'SELL')
-                tpts.create_order('TPTS', 'SELL')
+                # tpts.create_order('TPTS', 'SELL')
 
                 time.sleep(1560)
 
         except Exception as e:
             bot.exception_alert(e)
             time.sleep(random.randint(60, 150))
-            bot.email('MAIN BOT - EXCEPTION', 'ERROR',
-                      (str(traceback.format_exc()) + '\n' + str(e)), 'private')
+            bot.email('MAIN BOT - EXCEPTION', 'ERROR', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
 
         time.sleep(300)

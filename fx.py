@@ -28,6 +28,11 @@ def gbpjpy():
 # U6V8MKZWYAU0J728
 # GMQ2WJ9QWT993MVD
 
+
+def adx_cross():
+    bot.adx_crossover_bot('EURUSD', 0.0001, '4OKNDHHTQH2CFWZ9', 'EUR_USD')
+
+
 def cross():
     bot.crossover_bot('EURUSD', 0.0001, 'GMQ2WJ9QWT993MVD', 'EUR_USD')
 

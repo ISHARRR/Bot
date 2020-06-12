@@ -2,7 +2,8 @@ def recipients():
     recipients = ['isharreehal8@gmail.com',
                   'rehmatk08@gmail.com',
                   'usmanijazofficial@gmail.com',
-                  'abadur.rahman321@gmail.com'
+                  'abadur.rahman321@gmail.com',
+                  'zuhaibali91@icloud.com',
 
                   ]
     return recipients

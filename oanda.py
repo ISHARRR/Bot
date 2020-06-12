@@ -22,7 +22,7 @@ import time
 
 class Oanda:
     # account authenticator returing access_token
-    token="ace07448fdbcddf1d24c76db4f654abd-0673bb236877d296d74b63fef2d9be08"
+    token = "ace07448fdbcddf1d24c76db4f654abd-0673bb236877d296d74b63fef2d9be08"
     # api access key
     client = oandapyV20.API(access_token=token)
     api = oandapyV20.API(access_token=token)
@@ -32,7 +32,6 @@ class Oanda:
         self.instrument = instrument
         self.one_pip = one_pip
         self.risk_percentage = risk_percentage
-
 
     def account(self):
         # requesting data
@@ -46,37 +45,37 @@ class Oanda:
         # returns account balance
     def get_balance(self):
         response = self.account()
-        return (response.loc['balance' , 'account'])
+        return (response.loc['balance', 'account'])
 
     # returns total profit loss on account
     def get_pl(self):
         response = self.account()
-        return (response.loc['pl' , 'account'])
+        return (response.loc['pl', 'account'])
 
     # returns margin avaible
     def get_margin_available(self):
         response = self.account()
-        return (response.loc['marginAvailable' , 'account'])
+        return (response.loc['marginAvailable', 'account'])
 
     # returns margin used
     def get_margin_used(self):
         response = self.account()
-        return (response.loc['marginUsed' , 'account'])
+        return (response.loc['marginUsed', 'account'])
 
     # returns total commission paid
     def get_commission(self):
         response = self.account()
-        return (response.loc['commission' , 'account'])
+        return (response.loc['commission', 'account'])
 
     # returns number of open trades
     def get_open_trade_count(self):
         response = self.account()
-        return (response.loc['openTradeCount' , 'account'])
+        return (response.loc['openTradeCount', 'account'])
 
     # returns current prices of trading instrument
     def get_current_price(self):
         # passing arguments
-        params ={"instruments": self.instrument}
+        params = {"instruments": self.instrument}
         # places request
         r = pricing.PricingInfo(accountID=self.accountID, params=params)
         rv = self.api.request(r)
@@ -88,6 +87,7 @@ class Oanda:
         return float("{:.{}f}".format(float(df), 4))
     # ==============================================================================
     # returns list of instruments as output into instrument.txt, already ran once
+
     def get_instruments(self):
         self.client = oandapyV20.API(access_token=token)
 
@@ -99,6 +99,7 @@ class Oanda:
     # ==============================================================================
     # CALULATIONS
     # calculates unit amount based of balance and risk percantge
+
     def unit_amount(self, buyorsell):
         current_price = self.get_current_price()
         leverage = 30
@@ -124,7 +125,7 @@ class Oanda:
         UNIT_AMOUNT = self.unit_amount(buyorsell)
         one_pip = float(self.one_pip)
 
-        pip_value = (one_pip/CURRENT_PRICE) * UNIT_AMOUNT
+        pip_value = (one_pip / CURRENT_PRICE) * UNIT_AMOUNT
         return round(pip_value, 2)
 
     # calculates take profit and stop loss based of balance available and risk percantge
@@ -137,13 +138,19 @@ class Oanda:
         decimal_place = abs(Decimal(str(pip)).as_tuple().exponent)
 
         if buyorsell == 'BUY':
-            pip_gain = float(((self.risk_percentage * 100)/PIP_VALUE) * profit_ratio)
-            pip_loss = (float(((self.risk_percentage * 100)/PIP_VALUE) * loss_ratio)) * -1
-            pip_trailing = (float(((self.risk_percentage * 100)/PIP_VALUE) * trailing_ratio))
+            pip_gain = float(
+                ((self.risk_percentage * 100) / PIP_VALUE) * profit_ratio)
+            pip_loss = (
+                float(((self.risk_percentage * 100) / PIP_VALUE) * loss_ratio)) * -1
+            pip_trailing = (
+                float(((self.risk_percentage * 100) / PIP_VALUE) * trailing_ratio))
         elif buyorsell == 'SELL':
-            pip_gain = float(((self.risk_percentage * 100)/PIP_VALUE) * profit_ratio)
-            pip_loss = abs((float(((self.risk_percentage * 100)/PIP_VALUE) * loss_ratio)))
-            pip_trailing = abs((float(((self.risk_percentage * 100)/PIP_VALUE) * trailing_ratio)))
+            pip_gain = float(
+                ((self.risk_percentage * 100) / PIP_VALUE) * profit_ratio)
+            pip_loss = abs(
+                (float(((self.risk_percentage * 100) / PIP_VALUE) * loss_ratio)))
+            pip_trailing = abs(
+                (float(((self.risk_percentage * 100) / PIP_VALUE) * trailing_ratio)))
 
         take_profit = round((pip_gain * pip), decimal_place)
         stop_loss = round((pip_loss * pip), decimal_place)
@@ -164,7 +171,8 @@ class Oanda:
     def create_order(self, order_type, buyorsell):
         UNIT_AMOUNT = self.unit_amount(buyorsell)
         # sets take profit and trailing stop loss
-        TAKE_PROFIT_PRICE, STOP_LOSS_PRICE, TRAILING_STOP_DISTANCE = self.risk_management(0.1, 0.05, 0.05, buyorsell)
+        TAKE_PROFIT_PRICE, STOP_LOSS_PRICE, TRAILING_STOP_DISTANCE = self.risk_management(
+            0.1, 0.05, 0.05, buyorsell)
         RISK_PERCENTAGE = self.risk_percentage
         OPEN_TRADE_COUNT = self.get_open_trade_count()
 
@@ -172,38 +180,44 @@ class Oanda:
             pass
         else:
             if order_type == 'ALL':
-            # The orderspecs
+                # The orderspecs
                 mktOrder = MarketOrderRequest(
-                    instrument = self.instrument,
-                    units = UNIT_AMOUNT,
-                    takeProfitOnFill=TakeProfitDetails(price=TAKE_PROFIT_PRICE).data,
+                    instrument=self.instrument,
+                    units=UNIT_AMOUNT,
+                    takeProfitOnFill=TakeProfitDetails(
+                        price=TAKE_PROFIT_PRICE).data,
                     stopLossOnFill=StopLossDetails(price=STOP_LOSS_PRICE).data,
-                    trailingStopLossOnFill=TrailingStopLossDetails(distance=TRAILING_STOP_DISTANCE).data,
+                    trailingStopLossOnFill=TrailingStopLossDetails(
+                        distance=TRAILING_STOP_DISTANCE).data,
                 )
             elif order_type == 'TPSL':
                 mktOrder = MarketOrderRequest(
-                    instrument = self.instrument,
-                    units = UNIT_AMOUNT,
-                    takeProfitOnFill=TakeProfitDetails(price=TAKE_PROFIT_PRICE).data,
+                    instrument=self.instrument,
+                    units=UNIT_AMOUNT,
+                    takeProfitOnFill=TakeProfitDetails(
+                        price=TAKE_PROFIT_PRICE).data,
                     stopLossOnFill=StopLossDetails(price=STOP_LOSS_PRICE).data,
                 )
             elif order_type == 'TPTS':
                 mktOrder = MarketOrderRequest(
-                    instrument = self.instrument,
-                    units = UNIT_AMOUNT,
-                    takeProfitOnFill=TakeProfitDetails(price=TAKE_PROFIT_PRICE).data,
-                    trailingStopLossOnFill=TrailingStopLossDetails(distance=TRAILING_STOP_DISTANCE).data,
+                    instrument=self.instrument,
+                    units=UNIT_AMOUNT,
+                    takeProfitOnFill=TakeProfitDetails(
+                        price=TAKE_PROFIT_PRICE).data,
+                    trailingStopLossOnFill=TrailingStopLossDetails(
+                        distance=TRAILING_STOP_DISTANCE).data,
                 )
             elif order_type == 'TS':
                 mktOrder = MarketOrderRequest(
-                    instrument = self.instrument,
-                    units = UNIT_AMOUNT,
-                    trailingStopLossOnFill=TrailingStopLossDetails(distance=TRAILING_STOP_DISTANCE).data,
+                    instrument=self.instrument,
+                    units=UNIT_AMOUNT,
+                    trailingStopLossOnFill=TrailingStopLossDetails(
+                        distance=TRAILING_STOP_DISTANCE).data,
                 )
             elif order_type == 'CROSS':
                 mktOrder = MarketOrderRequest(
-                    instrument = self.instrument,
-                    units = UNIT_AMOUNT,
+                    instrument=self.instrument,
+                    units=UNIT_AMOUNT,
                 )
             # print("Market Order specs: \n{}".format(json.dumps(mktOrder.data, indent=4)))
             # create the OrderCreate request
@@ -216,17 +230,20 @@ class Oanda:
             else:
                 # print(json.dumps(rv, indent=2))
                 try:
-                    data = DataFrame.from_dict(rv['orderCancelTransaction'], orient = 'index')
+                    data = DataFrame.from_dict(
+                        rv['orderCancelTransaction'], orient='index')
                     status = data.loc['type', 0]
                     reason = data.loc['reason', 0]
                     id = data.loc['id', 0]
-                    print('Order status:', status +'\n'+ 'Reason:', reason +'\n'+ 'Trade ID:', id)
+                    print('Order status:', status + '\n' +
+                          'Reason:', reason + '\n' + 'Trade ID:', id)
                 except KeyError:
                     # KeyError to determin catch error raised by json return of 'orderCancelTransaction' instead of 'orderFillTransaction'
-                    data = DataFrame.from_dict(rv['orderFillTransaction'], orient = 'index')
+                    data = DataFrame.from_dict(
+                        rv['orderFillTransaction'], orient='index')
                     status = data.loc['type', 0]
                     id = data.loc['id', 0]
-                    print('Order status:', status +'\n'+ 'Trade ID:', id)
+                    print('Order status:', status + '\n' + 'Trade ID:', id)
 
                     return id
 
@@ -237,11 +254,12 @@ class Oanda:
         r = trades.TradeClose(self.accountID, tradeID=id, data=ordr.data)
         # perform the request
         rv = self.client.request(r)
-        data = DataFrame.from_dict(rv['orderCreateTransaction'], orient = 'index')
+        data = DataFrame.from_dict(
+            rv['orderCreateTransaction'], orient='index')
         trade_close = data.loc['tradeClose', 0]
         units_closed = trade_close['units']
         tradeID = trade_close['tradeID']
-        print('Units closed:', units_closed +'\n'+ 'Trade ID:', tradeID)
+        print('Units closed:', units_closed + '\n' + 'Trade ID:', tradeID)
 
         return units_closed, tradeID
 

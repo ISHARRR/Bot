@@ -26,14 +26,13 @@ def createDB(file, buy_id=0, sell_id=0):
             pass
         else:
             with shelve.open(file) as d:
-                d['key'] = { 'buy_id': buy_id, 'sell_id': sell_id }
+                d['key'] = {'buy_id': buy_id, 'sell_id': sell_id}
     elif platform == "darwin":
         if db:
             pass
         else:
             with shelve.open(file) as d:
-                d['key'] = { 'buy_id': buy_id, 'sell_id': sell_id }
-
+                d['key'] = {'buy_id': buy_id, 'sell_id': sell_id}
 
 
 def updateDB(buyorsell, data, file):

@@ -1,5 +1,6 @@
 from indicators import (
     ema_sma,
+    adx,
 
 )
 from trades_database import db
@@ -12,13 +13,13 @@ import random
 import traceback
 
 
-def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
+def adx_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     bot.running_msg(stock_symbol)
 
-    account = '101-004-14591208-006'
+    account = '101-004-14591208-004'
 
     cross = oanda.Oanda(account, oanda_stock_symbol, one_pip, 0.95)
-    database = 'trades_database/sma_crossDB'
+    database = 'trades_database/adx_crossDB'
 
     db.createDB(database)
 
@@ -28,25 +29,22 @@ def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     fast_ema = 150
     slow_ema = 450
 
-    sma_period = 1200
-
     while True:
         try:
-            current_sma = ema_sma.sma(stock_symbol, api_key, sma_period)
+            adx = adx.adx(stock_symbol, api_key)
             current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.double_ema(
                 stock_symbol, api_key, fast_ema, slow_ema)
 
-            email_message = 'Crossover Strategy'
+            email_message = 'ADX Crossover Strategy'
 
-            if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_ema_slow > current_sma)):  # BUY
+            if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (adx >=25)):  # BUY
                 bot.trade_msg(stock_symbol, 'BUY')
                 # email('BUY', stock_symbol, email_message)
                 bot.email('BUY - test', stock_symbol, email_message, 'private')
                 if sell_id != 0:
                     cross.close_order(sell_id)
                     print('Trade ID:', sell_id, 'Status: CLOSED' + '\n')
-                    bot.email('Order Closed - test', str(sell_id),
-                              'Check if order has been closed', 'private')
+                    bot.email('Order Closed - test', str(sell_id), 'Check if order has been closed', 'private')
 
                     sell_id = db.updateDB('SELL', 0, database)
 
@@ -57,42 +55,38 @@ def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                 while True:
                     time.sleep(60)
                     try:
-                        current_sma = ema_sma.sma(stock_symbol, api_key, sma_period)
+                        adx = adx.adx(stock_symbol, api_key)
                         current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.double_ema(
                             stock_symbol, api_key, fast_ema, slow_ema)
 
                         if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow)):  # SELL
                             if buy_id != 0:
                                 cross.close_order(buy_id)
-                                print('Trade ID:', buy_id,
-                                      'Status: CLOSED' + '\n')
-                                bot.email('Order Closed - test', str(buy_id),
-                                          'Check if order has been closed', 'private')
+                                print('Trade ID:', buy_id,'Status: CLOSED' + '\n')
+                                bot.email('Order Closed - test', str(buy_id),'Check if order has been closed', 'private')
                                 buy_id = db.updateDB('BUY', 0, database)
 
-                        if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_ema_slow < current_sma)):  # SELL
+                        if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (adx >=25)):  # SELL
                             bot.trade_msg(stock_symbol, 'SELL')
                             # email('SELL', stock_symbol, email_message)
-                            bot.email('SELL - test', stock_symbol,
-                                      email_message, 'private')
+                            bot.email('SELL - test', stock_symbol, email_message, 'private')
 
                             if cross.get_open_trade_count() < 1:
                                 trade_id = cross.create_order('CROSS', 'SELL')
                                 sell_id = db.updateDB('SELL', trade_id, database)
 
                             break
-                        if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_ema_slow > current_sma)):  # break
+                        if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (adx < 25)):  # break
                             break
 
                     except Exception as e:
                         bot.exception_alert(e)
-                        bot.email('TEST BOT: EXCEPTION ERROR -', 'INNER LOOP',
-                                  (str(traceback.format_exc()) + '\n' + str(e)), 'private')
+                        bot.email('TEST BOT: EXCEPTION ERROR -', 'INNER LOOP', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
                         time.sleep(random.randint(60, 150))
 
                     time.sleep(240)
 
-            if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_ema_slow < current_sma)):  # SELL
+            if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (adx >=25)):  # SELL
                 bot.trade_msg(stock_symbol, 'SELL')
                 # email('SELL', stock_symbol, email_message)
                 bot.email('SELL - test', stock_symbol,
@@ -100,8 +94,7 @@ def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                 if buy_id != 0:
                     cross.close_order(buy_id)
                     print('Trade ID:', buy_id, 'Status: CLOSED' + '\n')
-                    bot.email('Order Closed - test', str(buy_id),
-                              'Check if order has been closed', 'private')
+                    bot.email('Order Closed - test', str(buy_id), 'Check if order has been closed', 'private')
                     buy_id = db.updateDB('BUY', 0, database)
 
                 if cross.get_open_trade_count() < 1:
@@ -111,7 +104,7 @@ def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                 while True:
                     time.sleep(60)
                     try:
-                        current_sma = ema_sma.sma(stock_symbol, api_key, sma_period)
+                        adx = adx.adx(stock_symbol, api_key)
                         current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.double_ema(
                             stock_symbol, api_key, fast_ema, slow_ema)
 
@@ -124,7 +117,7 @@ def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                                           'Check if order has been closed', 'private')
                                 sell_id = db.updateDB('SELL', 0, database)
 
-                        if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_ema_slow > current_sma)):  # BUY
+                        if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (adx >=25)):  # BUY
                             bot.trade_msg(stock_symbol, 'BUY')
                             # email('BUY', stock_symbol, email_message)
                             bot.email('BUY - test', stock_symbol,
@@ -135,7 +128,7 @@ def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                                 buy_id = db.updateDB('BUY', trade_id, database)
 
                             break
-                        if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_ema_slow < current_sma)):  # break
+                        if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (adx < 25)):  # break
                             break
 
                     except Exception as e:

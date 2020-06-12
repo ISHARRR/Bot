@@ -1,19 +1,48 @@
 from alpha_vantage.techindicators import TechIndicators
-from alpha_vantage.timeseries import TimeSeries
 
 
-def ema_10_30(stock_symbol, api_key):
+def ema(stock_symbol, api_key, period):
+    # variable for indicator
+    ti = TechIndicators(key=api_key, output_format='pandas')
+    # ema tim period eg 5 = 150 on 30 mins time frame
+    period = period
+
+    # ema
+    data_ema, meta_data_ema = ti.get_ema(
+        symbol=stock_symbol,
+        series_type='close',
+        interval='1min',
+        time_period=period,
+        )
+
+    # getting the most current value aka the n (tail)current_ema
+    current_ema = data_ema['EMA'].iloc[-1]
+    # getting the second most current value aka the n-1
+    previous_ema = data_ema['EMA'].iloc[-31]
+
+    return current_ema, previous_ema
+
+
+def double_ema(stock_symbol, api_key, fast, slow):
     # variable for indicator
     ti = TechIndicators(key=api_key, output_format='pandas')
     # 10 day ema
-    fast_period = 150
+    fast_period = fast
     # 30 day ema
-    slow_period = 450
+    slow_period = slow
     # ema
     data_ema_fast, meta_data_ema = ti.get_ema(
-        symbol=stock_symbol, series_type='close', interval='1min', time_period=fast_period)
+        symbol=stock_symbol,
+        series_type='close',
+        interval='1min',
+        time_period=fast_period
+        )
     data_ema_slow, meta_data_ema = ti.get_ema(
-        symbol=stock_symbol, series_type='close', interval='1min', time_period=slow_period)
+        symbol=stock_symbol,
+        series_type='close',
+        interval='1min',
+        time_period=slow_period
+        )
 
     # print (data_ema_fast.iloc[-31:-1], '\n')
     # print (data_ema_slow.iloc[-31:-1], '\n')
@@ -28,29 +57,14 @@ def ema_10_30(stock_symbol, api_key):
     return current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow
 
 
-def sma_100(stock_symbol, api_key):
+def sma(stock_symbol, api_key, period=1200):
+    # 100 day period sma = 600 and 200 = 1200
     # variable for indicator
     ti = TechIndicators(key=api_key, output_format='pandas')
-    # 100 day sma
-    period = 600
     # sma
-    data_sma100, meta_data_sma = ti.get_sma(
+    data_sma, meta_data_sma = ti.get_sma(
         symbol=stock_symbol, series_type='close', interval='5min', time_period=period)
     # getting the most current value aka the n (tail)
-    current_sma100 = data_sma100['SMA'].iloc[-1]
+    current_sma = data_sma['SMA'].iloc[-1]
     # return current_sma200
-    return current_sma100
-
-
-def sma_200(stock_symbol, api_key):
-    # variable for indicator
-    ti = TechIndicators(key=api_key, output_format='pandas')
-    # 200 day sma
-    period = 1200
-    # sma
-    data_sma200, meta_data_sma = ti.get_sma(
-        symbol=stock_symbol, series_type='close', interval='5min', time_period=period)
-    # getting the most current value aka the n (tail)
-    current_sma200 = data_sma200['SMA'].iloc[-1]
-    # return current_sma200
-    return current_sma200
+    return current_sma

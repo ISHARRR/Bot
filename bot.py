@@ -4,6 +4,7 @@ from strats import (
     crossover,
     sma_crossover,
     basic,
+    adx_ema,
 )
 
 
@@ -43,26 +44,29 @@ def email(buyorsell, stock_symbol, context, privacy='public'):
 def exception_alert(e):
     ny_time = timezone('America/New_york')
     uk_time = timezone('Europe/London')
-    time_msg = 'NY-Time:' + '(' + ny_time +') ' + '| UK-Time:' + '(' + uk_time +')'
+    time_msg = 'NY-Time:' + '(' + ny_time + ') ' + \
+        '| UK-Time:' + '(' + uk_time + ')'
     window_len = os.popen('stty size', 'r').read().split()
-    print (' EXCEPTION ERROR '.center(int(window_len[1]), '*'))
-    print ('EXCEPTION ERROR', time_msg + '\n' + str(e) + '\n')
+    print(' EXCEPTION ERROR '.center(int(window_len[1]), '*'))
+    print('EXCEPTION ERROR', time_msg + '\n' + str(e) + '\n')
     # print ('EXCEPTION ERROR', time_msg + '\n' + str(traceback.format_exc()) + '\n' + str(e) + '\n')
-    print (' EXCEPTION ERROR '.center(int(window_len[1]), '*') + '\n')
+    print(' EXCEPTION ERROR '.center(int(window_len[1]), '*') + '\n')
 
 
 def running_msg(stock_symbol):
     ny_time = timezone('America/New_york')
     uk_time = timezone('Europe/London')
-    time_msg = 'NY-Time:' + '(' + ny_time +') ' + '| UK-Time:' + '(' + uk_time +')'
+    time_msg = 'NY-Time:' + '(' + ny_time + ') ' + \
+        '| UK-Time:' + '(' + uk_time + ')'
     print(stock_symbol, 'Running...', time_msg)
 
 
 def trade_msg(stock_symbol, buyorsell):
     ny_time = timezone('America/New_york')
     uk_time = timezone('Europe/London')
-    time_msg = '- ' + 'NY-Time:' + '(' + ny_time +') ' + '| UK-Time:' + '(' + uk_time +')'
-    print( buyorsell + ':', stock_symbol, time_msg)
+    time_msg = '- ' + 'NY-Time:' + \
+        '(' + ny_time + ') ' + '| UK-Time:' + '(' + uk_time + ')'
+    print(buyorsell + ':', stock_symbol, time_msg)
 
 
 # active bots
@@ -78,3 +82,7 @@ def crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
 def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     sma_crossover.sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol)
+
+
+def adx_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
+    adx_ema.adx_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol)

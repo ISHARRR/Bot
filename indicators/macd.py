@@ -1,5 +1,5 @@
 from alpha_vantage.techindicators import TechIndicators
-from alpha_vantage.timeseries import TimeSeries
+
 
 
 def macd(stock_symbol, api_key):
