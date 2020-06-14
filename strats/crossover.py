@@ -79,8 +79,7 @@ def crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
                     except Exception as e:
                         bot.exception_alert(e)
-                        bot.email('TEST BOT: EXCEPTION ERROR -', 'INNER LOOP',
-                                  (str(traceback.format_exc()) + '\n' + str(e)), 'private')
+                        bot.email('TEST BOT: EXCEPTION ERROR -', 'INNER LOOP',(str(traceback.format_exc()) + '\n' + str(e)), 'private')
                         time.sleep(random.randint(60, 150))
 
                     time.sleep(240)
@@ -129,16 +128,14 @@ def crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
                     except Exception as e:
                         bot.exception_alert(e)
-                        bot.email('TEST BOT: EXCEPTION ERROR -', 'INNER LOOP',
-                                  (str(traceback.format_exc()) + '\n' + str(e)), 'private')
+                        bot.email('TEST BOT: EXCEPTION ERROR -', 'INNER LOOP',(str(traceback.format_exc()) + '\n' + str(e)), 'private')
                         time.sleep(random.randint(60, 150))
 
                     time.sleep(240)
 
         except Exception as e:
             bot.exception_alert(e)
-            bot.email('TEST BOT: EXCEPTION', 'ERROR',
-                      (str(traceback.format_exc()) + '\n' + str(e)), 'private')
+            bot.email('TEST BOT: EXCEPTION', 'ERROR',(str(traceback.format_exc()) + '\n' + str(e)), 'private')
             time.sleep(random.randint(60, 150))
 
         time.sleep(300)
