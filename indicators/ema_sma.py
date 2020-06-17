@@ -8,17 +8,28 @@ def ema(stock_symbol, api_key, period):
     period = period
 
     # ema
-    data_ema, meta_data_ema = ti.get_ema(
-        symbol=stock_symbol,
-        series_type='close',
-        interval='1min',
-        time_period=period,
-        )
+    if period > 1000:
+        data_ema, meta_data_ema = ti.get_ema(
+            symbol=stock_symbol,
+            series_type='close',
+            interval='5min',
+            time_period=(int(period/5)),
+            )
+        # getting the second most current value aka the n-1
+        previous_ema = data_ema['EMA'].iloc[-7]
+
+    else:
+        data_ema, meta_data_ema = ti.get_ema(
+            symbol=stock_symbol,
+            series_type='close',
+            interval='1min',
+            time_period=period,
+            )
+        # getting the second most current value aka the n-1
+        previous_ema = data_ema['EMA'].iloc[-31]
 
     # getting the most current value aka the n (tail)current_ema
     current_ema = data_ema['EMA'].iloc[-1]
-    # getting the second most current value aka the n-1
-    previous_ema = data_ema['EMA'].iloc[-31]
 
     return current_ema, previous_ema
 
@@ -31,18 +42,42 @@ def double_ema(stock_symbol, api_key, fast, slow):
     # 30 day ema
     slow_period = slow
     # ema
-    data_ema_fast, meta_data_ema = ti.get_ema(
-        symbol=stock_symbol,
-        series_type='close',
-        interval='1min',
-        time_period=fast_period
-        )
-    data_ema_slow, meta_data_ema = ti.get_ema(
-        symbol=stock_symbol,
-        series_type='close',
-        interval='1min',
-        time_period=slow_period
-        )
+    if fast > 1000:
+        data_ema_fast, meta_data_ema = ti.get_ema(
+            symbol=stock_symbol,
+            series_type='close',
+            interval='5min',
+            time_period=(int(slow_period/5))
+            )
+        previous_ema_fast = data_ema_fast['EMA'].iloc[-7]
+    else:
+        data_ema_fast, meta_data_ema = ti.get_ema(
+            symbol=stock_symbol,
+            series_type='close',
+            interval='1min',
+            time_period=fast_period
+            )
+        previous_ema_fast = data_ema_fast['EMA'].iloc[-31]
+
+    if slow > 1000:
+        data_ema_slow, meta_data_ema = ti.get_ema(
+            symbol=stock_symbol,
+            series_type='close',
+            interval='5min',
+            time_period=(int(slow_period/5))
+            )
+        # getting the second most current value aka the n-1
+        previous_ema_slow = data_ema_slow['EMA'].iloc[-7]
+
+    else:
+        data_ema_slow, meta_data_ema = ti.get_ema(
+            symbol=stock_symbol,
+            series_type='close',
+            interval='1min',
+            time_period=(slow_period)
+            )
+        # getting the second most current value aka the n-1
+        previous_ema_slow = data_ema_slow['EMA'].iloc[-31]
 
     # print (data_ema_fast.iloc[-31:-1], '\n')
     # print (data_ema_slow.iloc[-31:-1], '\n')
@@ -50,21 +85,23 @@ def double_ema(stock_symbol, api_key, fast, slow):
     # getting the most current value aka the n (tail)
     current_ema_fast = data_ema_fast['EMA'].iloc[-1]
     current_ema_slow = data_ema_slow['EMA'].iloc[-1]
-    # getting the second most current value aka the n-1
-    previous_ema_fast = data_ema_fast['EMA'].iloc[-31]
-    previous_ema_slow = data_ema_slow['EMA'].iloc[-31]
 
     return current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow
 
 
-def sma(stock_symbol, api_key, period=1200):
+def sma(stock_symbol, api_key, period=200):
     # 100 day period sma = 600 and 200 = 1200
     # variable for indicator
     ti = TechIndicators(key=api_key, output_format='pandas')
     # sma
     data_sma, meta_data_sma = ti.get_sma(
-        symbol=stock_symbol, series_type='close', interval='5min', time_period=period)
+        symbol=stock_symbol,
+        series_type='close',
+        interval='30min',
+        time_period=period)
     # getting the most current value aka the n (tail)
     current_sma = data_sma['SMA'].iloc[-1]
     # return current_sma200
     return current_sma
+
+# print(sma('EURUSD', '4OKNDHHTQH2CFWZ9', 200))

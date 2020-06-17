@@ -13,18 +13,18 @@ import random
 import traceback
 
 
-def adx_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
+def adx_crossover_ts_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     bot.running_msg(stock_symbol)
 
-    account = '101-004-14591208-004'
+    account = '101-004-14591208-005'
 
     oa = oanda.Oanda(account, oanda_stock_symbol, one_pip, 0.95)
-    database = 'trades_database/adx_crossDB'
+    database = 'trades_database/adx_tsDB'
 
     fast_ema = 600
     slow_ema = 1500
 
-    order_prams = 'CROSS'
+    order_prams = 'TS'
 
     if order_prams == 'CROSS':
         db.createDB(database)
@@ -39,7 +39,7 @@ def adx_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
             current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.double_ema(
                 stock_symbol, api_key, fast_ema, slow_ema)
 
-            email_message = 'ADX Crossover Strategy'
+            email_message = 'ADX Crossover Strategy with TS'
 
             if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_adx >=25)):  # BUY
                 bot.trade_msg(stock_symbol, 'BUY')

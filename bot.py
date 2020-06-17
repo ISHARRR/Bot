@@ -5,6 +5,7 @@ from strats import (
     sma_crossover,
     basic,
     adx_ema,
+    adx_ema,
 )
 
 
@@ -86,3 +87,7 @@ def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
 def adx_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     adx_ema.adx_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol)
+
+
+def adx_crossover_ts_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
+    adx_ts.adx_crossover_ts_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol)

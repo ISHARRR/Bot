@@ -25,10 +25,10 @@ def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     buy_id = db.getDB('BUY', database)
     sell_id = db.getDB('SELL', database)
 
-    fast_ema = 150
-    slow_ema = 450
+    fast_ema = 600
+    slow_ema = 1500
 
-    sma_period = 1200
+    sma_period = 200
 
     while True:
         try:
@@ -36,7 +36,7 @@ def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
             current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.double_ema(
                 stock_symbol, api_key, fast_ema, slow_ema)
 
-            email_message = 'Crossover Strategy'
+            email_message = 'Crossover Strategy with EMA and SMA'
 
             if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_ema_slow > current_sma)):  # BUY
                 bot.trade_msg(stock_symbol, 'BUY')

@@ -1,4 +1,4 @@
-from sys import platform
+# from sys import platform
 
 
 import shelve
@@ -21,18 +21,24 @@ def createDB(file, buy_id=0, sell_id=0):
     dat = pathlib.Path(file + '.dat').exists()
     dirr = pathlib.Path(file + '.dir').exists()
 
-    if platform == "linux":
-        if bak or dat or dirr:
-            pass
-        else:
-            with shelve.open(file) as d:
-                d['key'] = {'buy_id': buy_id, 'sell_id': sell_id}
-    elif platform == "darwin":
-        if db:
-            pass
-        else:
-            with shelve.open(file) as d:
-                d['key'] = {'buy_id': buy_id, 'sell_id': sell_id}
+    if bak or dat or dirr or db:
+        pass
+    else:
+        with shelve.open(file) as d:
+            d['key'] = {'buy_id': buy_id, 'sell_id': sell_id}
+
+    # if platform == 'linux':
+    #     if bak or dat or dirr:
+    #         pass
+    #     else:
+    #         with shelve.open(file) as d:
+    #             d['key'] = {'buy_id': buy_id, 'sell_id': sell_id}
+    # elif platform == 'darwin' or platform == 'linux2':
+    #     if db:
+    #         pass
+    #     else:
+    #         with shelve.open(file) as d:
+    #             d['key'] = {'buy_id': buy_id, 'sell_id': sell_id}
 
 
 def updateDB(buyorsell, data, file):
@@ -50,8 +56,8 @@ def updateDB(buyorsell, data, file):
 # createDB('crossDB')
 # print(getDB('BUY', 'crossDB'))
 # print(updateDB('BUY', 111, 'crossDB'))
-# # print(updateDB('SELL', 0, 'crossDB'))
-# # # print(updateDB('BUY', 51, 'smacrossDB'))
-# # # print(updateDB('SELL', 0, 'smacrossDB'))
+# print(updateDB('SELL', 0, 'crossDB'))
+# print(updateDB('BUY', 51, 'smacrossDB'))
+# print(updateDB('SELL', 0, 'smacrossDB'))
 #
 # print(getDB('BUY', 'crossDB'))
