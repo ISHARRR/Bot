@@ -27,7 +27,9 @@ def adx_crossover_ts_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     order_prams = 'TS'
 
     if order_prams == 'CROSS':
-        db.createDB(database)
+        id, direction = oa.get_open_trade()
+        db.createDB(database, id, direction)
+        
 
         buy_id = db.getDB('BUY', database)
         sell_id = db.getDB('SELL', database)
@@ -65,8 +67,8 @@ def adx_crossover_ts_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                         current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.double_ema(
                             stock_symbol, api_key, fast_ema, slow_ema)
 
-                        if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow)):  # SELL
-                            if order_prams == 'CROSS':
+                        if order_prams == 'CROSS':
+                            if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow)):  # SELL
                                 if buy_id != 0:
                                     oa.close_order(buy_id)
                                     print('Trade ID:', buy_id,'Status: CLOSED' + '\n')
@@ -116,8 +118,8 @@ def adx_crossover_ts_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                         current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.double_ema(
                             stock_symbol, api_key, fast_ema, slow_ema)
 
-                        if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow)):  # BUY
-                            if order_prams == 'CROSS':
+                        if order_prams == 'CROSS':
+                            if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow)):  # BUY
                                 if sell_id != 0:
                                     oa.close_order(sell_id)
                                     print('Trade ID:', sell_id,

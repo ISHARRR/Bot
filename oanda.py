@@ -41,6 +41,16 @@ class Oanda:
         response = DataFrame.from_dict(r.response)
         return response
 
+    def trades(self):
+        # requesting data
+        r = trades.OpenTrades(self.accountID)
+        self.client.request(r)
+        # saving the response into a dataframe
+        response = DataFrame.from_dict(r.response).iloc[0, 0]
+
+        return response
+
+
         # ==============================================================================
         # returns account balance
     def get_balance(self):
@@ -51,6 +61,20 @@ class Oanda:
     def get_pl(self):
         response = self.account()
         return (response.loc['pl', 'account'])
+
+    # returns id of most current open trade
+    def get_open_trade(self):
+        try:
+            response = self.trades()
+            id = response['id']
+
+            if int(response['initialUnits']) > 0:
+                direction = 'LONG'
+            else:
+                direction = 'SHORT'
+            return id, direction
+        except IndexError:
+            return 0, 0
 
     # returns margin avaible
     def get_margin_available(self):
@@ -269,6 +293,7 @@ class Oanda:
 # self.risk_percentage = risk_percentage
 # self.buyorsell = buyorsell
 # sell = Oanda('101-004-14591208-002', 'EUR_USD', 0.0001, 1)
+# print(sell.get_open_trade())
 # sell.create_order('TS','BUY')
 # id = 769
 # time.sleep(15)

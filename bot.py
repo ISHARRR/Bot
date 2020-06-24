@@ -6,6 +6,7 @@ from strats import (
     basic,
     adx_ema,
     adx_ema,
+    adx_direct,
 )
 
 
@@ -91,3 +92,7 @@ def adx_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
 def adx_crossover_ts_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     adx_ts.adx_crossover_ts_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol)
+
+
+def adx_direct_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
+    adx_direct.adx_direct_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol)
