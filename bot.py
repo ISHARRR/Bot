@@ -6,7 +6,8 @@ from strats import (
     basic,
     adx_ema,
     adx_ema,
-    adx_direct,
+    adx_test,
+    adx_ema_sl,
 )
 
 
@@ -71,6 +72,35 @@ def trade_msg(stock_symbol, buyorsell):
     print(buyorsell + ':', stock_symbol, time_msg)
 
 
+def order_params(param):
+    if param == 'CROSS':
+        return True
+    elif param == 'SL':
+        return True
+    elif param == 'TS':
+        return True
+    else:
+        return False
+
+
+
+def get_trade( ):
+
+    buy_id = 0
+    sell_id = 0
+
+    if direction == 'LONG':
+        buy_id = id
+    elif direction == 0:
+        buy_id
+
+    if direction == 'SHORT':
+        sell_id = id
+    elif direction == 0:
+        sell_id
+
+
+
 # active bots
 
 
@@ -94,5 +124,9 @@ def adx_crossover_ts_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     adx_ts.adx_crossover_ts_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol)
 
 
-def adx_direct_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
-    adx_direct.adx_direct_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol)
+def adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
+    adx_test.adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol)
+
+
+def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
+    adx_ema_sl.adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol)

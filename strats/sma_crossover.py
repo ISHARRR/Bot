@@ -17,10 +17,10 @@ def sma_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
     account = '101-004-14591208-006'
 
-    cross = oanda.Oanda(account, oanda_stock_symbol, one_pip, 0.95)
+    cross = oanda.Oanda(account, oanda_stock_symbol, one_pip, 0.95, 'FAKE')
     database = 'trades_database/sma_crossDB'
 
-    id, direction = oa.get_open_trade()
+    id, direction = cross.get_open_trade()
     db.createDB(database, id, direction)
 
     buy_id = db.getDB('BUY', database)

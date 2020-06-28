@@ -18,9 +18,9 @@ def ema_graph(stock_symbol, api_key):
     ti = TechIndicators(key=api_key, output_format='pandas')
 
     data_ema5, meta_data_ema = ti.get_ema(
-        symbol=stock_symbol, interval='1min', time_period=150)
+        symbol=stock_symbol, interval='1min', time_period=600)
     data_ema15, meta_data_ema = ti.get_ema(
-        symbol=stock_symbol, interval='1min', time_period=450)
+        symbol=stock_symbol, interval='1min', time_period=1400)
     # data_sma100, meta_data_ema = ti.get_sma(
     #     symbol=stock_symbol, interval='5min', time_period=600)
     # data_sma200, meta_data_ema = ti.get_sma(
@@ -114,12 +114,11 @@ def main():
     # 1
     # ema_graph('SPX', 'F34FEQKDQI3J2AKI')
     # 2
-    sma_graph('EURUSD', 'E47X6GN73CIDKMOW')
+    # sma_graph('EURUSD', 'E47X6GN73CIDKMOW')
     # 3
-    #ema_graph('GBPUSD', 'ARA2JDHJFGRI89VB')
+    ema_graph('EURUSD', 'AGB2JDHJFGRI89VB')
     # 4
     # adx_graph('GBPJPY', '60I75BKCK0OFGNKA')
-    # 5
-
+    #
 
 main()

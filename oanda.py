@@ -21,17 +21,35 @@ import time
 
 
 class Oanda:
-    # account authenticator returing access_token
-    token = "ace07448fdbcddf1d24c76db4f654abd-0673bb236877d296d74b63fef2d9be08"
-    # api access key
-    client = oandapyV20.API(access_token=token)
-    api = oandapyV20.API(access_token=token)
 
-    def __init__(self, accountID, instrument, one_pip, risk_percentage):
+
+    def __init__(self, accountID, instrument, one_pip, risk_percentage, realorfake):
         self.accountID = accountID
         self.instrument = instrument
         self.one_pip = one_pip
         self.risk_percentage = risk_percentage
+        self.realorfake = realorfake
+
+        # print(token)
+
+        if self.realorfake == 'REAL':
+            # account authenticator returing access_token - real account
+            self.token = "ce0451d5f8df4c5d1877def6182454d3-7ace0598d6e490baca7d8f89ccde2148"
+            # api access key
+            self.client = oandapyV20.API(access_token=self.token, environment="live")
+            self.api = oandapyV20.API(access_token=self.token)
+        elif self.realorfake == 'FAKE':
+            # account authenticator returing access_token - practise account
+            self.token = "ace07448fdbcddf1d24c76db4f654abd-0673bb236877d296d74b63fef2d9be08"
+            # api access key
+            self.client = oandapyV20.API(access_token=self.token)
+            self.api = oandapyV20.API(access_token=self.token)
+
+
+    # # api access key
+    # client = oandapyV20.API(access_token=token)
+    # api = oandapyV20.API(access_token=token)
+
 
     def account(self):
         # requesting data
@@ -113,10 +131,10 @@ class Oanda:
     # returns list of instruments as output into instrument.txt, already ran once
 
     def get_instruments(self):
-        self.client = oandapyV20.API(access_token=token)
+        # self.client = oandapyV20.API(access_token=token)
 
         r = accounts.AccountInstruments(accountID=self.accountID)
-        rv = client.request(r)
+        rv = self.client.request(r)
 
         with open('instrument.txt', 'w') as outfile:
             json.dump(rv, outfile, indent=2)
@@ -162,19 +180,36 @@ class Oanda:
         decimal_place = abs(Decimal(str(pip)).as_tuple().exponent)
 
         if buyorsell == 'BUY':
-            pip_gain = float(
-                ((self.risk_percentage * 100) / PIP_VALUE) * profit_ratio)
-            pip_loss = (
-                float(((self.risk_percentage * 100) / PIP_VALUE) * loss_ratio)) * -1
-            pip_trailing = (
-                float(((self.risk_percentage * 100) / PIP_VALUE) * trailing_ratio))
+            if profit_ratio != 0:
+                pip_gain = float(((self.risk_percentage * 100) / PIP_VALUE) * profit_ratio)
+            else:
+                pip_gain = float(((self.risk_percentage * 100) / PIP_VALUE) * 1)
+
+            if loss_ratio != 0:
+                pip_loss = (float(((self.risk_percentage * 100) / PIP_VALUE) * loss_ratio)) * -1
+            else:
+                pip_loss = (float(((self.risk_percentage * 100) / PIP_VALUE) * 1)) * -1
+
+            if trailing_ratio != 0:
+                pip_trailing = (float(((self.risk_percentage * 100) / PIP_VALUE) * trailing_ratio))
+            else:
+                pip_trailing = (float(((self.risk_percentage * 100) / PIP_VALUE) * 1))
+
         elif buyorsell == 'SELL':
-            pip_gain = float(
-                ((self.risk_percentage * 100) / PIP_VALUE) * profit_ratio)
-            pip_loss = abs(
-                (float(((self.risk_percentage * 100) / PIP_VALUE) * loss_ratio)))
-            pip_trailing = abs(
-                (float(((self.risk_percentage * 100) / PIP_VALUE) * trailing_ratio)))
+            if profit_ratio != 0:
+                pip_gain = float(((self.risk_percentage * 100) / PIP_VALUE) * profit_ratio)
+            else:
+                pip_gain = float(((self.risk_percentage * 100) / PIP_VALUE) * 1)
+
+            if loss_ratio != 0:
+                pip_loss = abs((float(((self.risk_percentage * 100) / PIP_VALUE) * loss_ratio)))
+            else:
+                pip_loss = abs((float(((self.risk_percentage * 100) / PIP_VALUE) * 1)))
+
+            if trailing_ratio != 0:
+                pip_trailing = abs((float(((self.risk_percentage * 100) / PIP_VALUE) * trailing_ratio)))
+            else:
+                pip_trailing = abs((float(((self.risk_percentage * 100) / PIP_VALUE) * 1)))
 
         take_profit = round((pip_gain * pip), decimal_place)
         stop_loss = round((pip_loss * pip), decimal_place)
@@ -192,11 +227,11 @@ class Oanda:
         return take_profit_price, stop_loss_price, trailing_stop_distance,
 
     # order template
-    def create_order(self, order_type, buyorsell):
+    def create_order(self, order_type, buyorsell, tp=0.1, sl=0.05, ts=0.05):
         UNIT_AMOUNT = self.unit_amount(buyorsell)
         # sets take profit and trailing stop loss
         TAKE_PROFIT_PRICE, STOP_LOSS_PRICE, TRAILING_STOP_DISTANCE = self.risk_management(
-            0.1, 0.05, 0.05, buyorsell)
+            tp, sl, ts, buyorsell)
         RISK_PERCENTAGE = self.risk_percentage
         OPEN_TRADE_COUNT = self.get_open_trade_count()
 
@@ -237,6 +272,12 @@ class Oanda:
                     units=UNIT_AMOUNT,
                     trailingStopLossOnFill=TrailingStopLossDetails(
                         distance=TRAILING_STOP_DISTANCE).data,
+                )
+            elif order_type == 'SL':
+                mktOrder = MarketOrderRequest(
+                    instrument=self.instrument,
+                    units=UNIT_AMOUNT,
+                    stopLossOnFill=StopLossDetails(price=STOP_LOSS_PRICE).data,
                 )
             elif order_type == 'CROSS':
                 mktOrder = MarketOrderRequest(
@@ -286,6 +327,10 @@ class Oanda:
         print('Units closed:', units_closed + '\n' + 'Trade ID:', tradeID)
 
         return units_closed, tradeID
+
+# account = '101-004-14591208-008'
+# oa = Oanda(account, 'EUR_USD', 0.0001, 0.95, 'FAKE')
+# print(oa.token)
 
 # self.accountID = accountID
 # self.instrument = instrument

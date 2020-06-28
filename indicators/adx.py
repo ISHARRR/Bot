@@ -16,7 +16,6 @@ def adx(stock_symbol, api_key, interval='30min'):
 
     # longterm_adx = sum(data_adx['ADX'].iloc[-1440:])/1440
     current_adx = data_adx['ADX'].iloc[-1]
-    previous_adx = data_adx['ADX'].iloc[-2]
 
     return current_adx
 

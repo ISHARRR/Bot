@@ -1,3 +1,4 @@
+
 from indicators import (
     ema_sma,
 
@@ -17,13 +18,13 @@ def crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
     account = '101-004-14591208-007'
 
-    cross = oanda.Oanda(account, oanda_stock_symbol, one_pip, 0.95)
+    cross = oanda.Oanda(account, oanda_stock_symbol, one_pip, 0.95, 'FAKE')
     database = 'trades_database/crossDB'
 
-    id, direction = oa.get_open_trade()
+    id, direction = cross.get_open_trade()
     db.createDB(database, id, direction)
 
-    buy_id = db.getDB('BUY', database)
+    buy_id = db.getDB('BUY', databacse)
     sell_id = db.getDB('SELL', database)
 
     fast_ema = 600
