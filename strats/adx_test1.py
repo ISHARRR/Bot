@@ -13,7 +13,7 @@ import random
 import traceback
 
 
-def adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
+def adx_test_bot1(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     bot.running_msg(stock_symbol)
 
     account = '101-004-14591208-008'
@@ -64,7 +64,7 @@ def adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                         bot.email('Order Closed', str(sell_id), 'Check if order has been closed', 'private')
 
                 if oa.get_open_trade_count() < 1:
-                    oa.create_order(order_params, 'BUY', tp=0, sl=0, ts=0.1)
+                    oa.create_order(order_params, 'BUY', tp=0.1, sl=0, ts=0.1)
 
             elif ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_adx < 25)):  # BUY
                 bot.trade_msg(stock_symbol, 'BUY')
@@ -78,7 +78,7 @@ def adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                         bot.email('Order Closed', str(sell_id), 'Check if order has been closed', 'private')
 
                 if oa.get_open_trade_count() < 1:
-                    oa.create_order(order_params, 'BUY', tp=0, sl=0, ts=0.05)
+                    oa.create_order(order_params, 'BUY', tp=0.1, sl=0, ts=0.05)
 
 
                 while True:
@@ -121,7 +121,7 @@ def adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                             bot.email('SELL - Strong ADX', stock_symbol, email_message, 'private')
 
                             if oa.get_open_trade_count() < 1:
-                                oa.create_order(order_params, 'SELL', tp=0, sl=0, ts=0.1)
+                                oa.create_order(order_params, 'SELL', tp=0.1, sl=0, ts=0.1)
 
                             break
                         if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_adx < 25)):  # sell
@@ -130,7 +130,7 @@ def adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                             bot.email('SELL - Weak ADX', stock_symbol, email_message, 'private')
 
                             if oa.get_open_trade_count() < 1:
-                                oa.create_order(order_params, 'SELL', tp=0, sl=0, ts=0.05)
+                                oa.create_order(order_params, 'SELL', tp=0.1, sl=0, ts=0.05)
 
                             break
 
@@ -155,7 +155,7 @@ def adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                         bot.email('Order Closed - test', str(buy_id), 'Check if order has been closed', 'private')
 
                 if oa.get_open_trade_count() < 1:
-                    oa.create_order(order_params, 'SELL', tp=0, sl=0, ts=0.1)
+                    oa.create_order(order_params, 'SELL', tp=0.1, sl=0, ts=0.1)
 
             elif ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_adx < 25)):  # SELL
                 bot.trade_msg(stock_symbol, 'SELL')
@@ -169,7 +169,7 @@ def adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                         bot.email('Order Closed - test', str(buy_id), 'Check if order has been closed', 'private')
 
                 if oa.get_open_trade_count() < 1:
-                    oa.create_order(order_params, 'SELL', tp=0, sl=0, ts=0.05)
+                    oa.create_order(order_params, 'SELL', tp=0.1, sl=0, ts=0.05)
 
 
 
@@ -213,7 +213,7 @@ def adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                             bot.email('BUY - Stong ADX', stock_symbol, email_message, 'private')
 
                             if oa.get_open_trade_count() < 1:
-                                oa.create_order(order_params, 'BUY', tp=0, sl=0, ts=0.1)
+                                oa.create_order(order_params, 'BUY', tp=0.1, sl=0, ts=0.1)
 
                             break
 
@@ -223,7 +223,7 @@ def adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                             bot.email('BUY - Weak ADX', stock_symbol, email_message, 'private')
 
                             if oa.get_open_trade_count() < 1:
-                                oa.create_order(order_params, 'BUY', tp=0, sl=0, ts=0.05)
+                                oa.create_order(order_params, 'BUY', tp=0.1, sl=0, ts=0.05)
 
                             break
 
