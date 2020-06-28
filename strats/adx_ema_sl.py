@@ -16,9 +16,11 @@ import traceback
 def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     bot.running_msg(stock_symbol)
 
-    account = '001-004-4069941-004'
+    # account = '001-004-4069941-004'
+    account = '101-004-14591208-006'
 
-    oa = oanda.Oanda(account, oanda_stock_symbol, one_pip, 0.95, 'REAL')
+    # oa = oanda.Oanda(account, oanda_stock_symbol, one_pip, 0.95, 'REAL')
+    oa = oanda.Oanda(account, oanda_stock_symbol, one_pip, 0.95, 'FAKE')
 
     fast_ema = 600
     slow_ema = 1500
