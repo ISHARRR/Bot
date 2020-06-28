@@ -16,7 +16,7 @@ import traceback
 def adx_test_bot1(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     bot.running_msg(stock_symbol)
 
-    account = '101-004-14591208-008'
+    account = '101-004-14591208-007'
 
     oa = oanda.Oanda(account, oanda_stock_symbol, one_pip, 0.95, 'FAKE')
 
