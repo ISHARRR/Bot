@@ -82,7 +82,7 @@ def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                 if oa.get_open_trade_count() < 1:
                     oa.create_order(order_params, 'BUY', tp=0, sl=0, ts=0.05)
 
-            elif (adx < 10):
+            elif (current_adx < 10):
                 break
 
 
@@ -139,7 +139,7 @@ def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
                             break
 
-                        elif (adx < 10):
+                        elif (current_adx < 10):
                             break
 
                     except Exception as e:
@@ -179,7 +179,7 @@ def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                 if oa.get_open_trade_count() < 1:
                     oa.create_order(order_params, 'SELL', tp=0, sl=0, ts=0.05)
 
-            elif (adx < 10):
+            elif (current_adx < 10):
                 break
 
 
@@ -237,7 +237,7 @@ def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
                             break
 
-                        elif (adx < 10):
+                        elif (current_adx < 10):
                             break
 
                     except Exception as e:
