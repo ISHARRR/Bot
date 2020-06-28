@@ -68,7 +68,7 @@ def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                 if oa.get_open_trade_count() < 1:
                     oa.create_order(order_params, 'BUY', tp=0, sl=0, ts=0.1)
 
-            elif ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_adx < 25)):  # BUY
+            elif ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_adx < 25 and current_adx > 10)):  # BUY
                 bot.trade_msg(stock_symbol, 'BUY')
                 # email('BUY', stock_symbol, email_message)
                 bot.email('BUY - Weak ADX', stock_symbol, email_message, 'private')
@@ -81,6 +81,9 @@ def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
                 if oa.get_open_trade_count() < 1:
                     oa.create_order(order_params, 'BUY', tp=0, sl=0, ts=0.05)
+
+            elif (adx < 10):
+                break
 
 
                 while True:
@@ -126,7 +129,7 @@ def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                                 oa.create_order(order_params, 'SELL', tp=0, sl=0, ts=0.1)
 
                             break
-                        if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_adx < 25)):  # sell
+                        if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_adx < 25 and current_adx > 10)):  # sell
                             bot.trade_msg(stock_symbol, 'SELL')
                             # email('SELL', stock_symbol, email_message)
                             bot.email('SELL - Weak ADX', stock_symbol, email_message, 'private')
@@ -134,6 +137,9 @@ def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                             if oa.get_open_trade_count() < 1:
                                 oa.create_order(order_params, 'SELL', tp=0, sl=0, ts=0.05)
 
+                            break
+
+                        elif (adx < 10):
                             break
 
                     except Exception as e:
@@ -159,7 +165,7 @@ def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                 if oa.get_open_trade_count() < 1:
                     oa.create_order(order_params, 'SELL', tp=0, sl=0, ts=0.1)
 
-            elif ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_adx < 25)):  # SELL
+            elif ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_adx < 25 and current_adx > 10)):   # SELL
                 bot.trade_msg(stock_symbol, 'SELL')
                 # email('SELL', stock_symbol, email_message)
                 bot.email('SELL - Weak ADX', stock_symbol, email_message, 'private')
@@ -171,8 +177,10 @@ def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                         bot.email('Order Closed - test', str(buy_id), 'Check if order has been closed', 'private')
 
                 if oa.get_open_trade_count() < 1:
-                    oa.create_order(order_params, 'SELL', tp=0, sl=0.1, ts=0.05)
+                    oa.create_order(order_params, 'SELL', tp=0, sl=0, ts=0.05)
 
+            elif (adx < 10):
+                break
 
 
                 while True:
@@ -219,14 +227,17 @@ def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
                             break
 
-                        if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_adx < 25)):  # break
+                        if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_adx < 25 and current_adx > 10)):   # break
                             bot.trade_msg(stock_symbol, 'BUY')
                             # email('BUY', stock_symbol, email_message)
                             bot.email('BUY - Weak ADX', stock_symbol, email_message, 'private')
 
                             if oa.get_open_trade_count() < 1:
-                                oa.create_order(order_params, 'BUY', tp=0, sl=0.1, ts=0.05)
+                                oa.create_order(order_params, 'BUY', tp=0, sl=0, ts=0.05)
 
+                            break
+
+                        elif (adx < 10):
                             break
 
                     except Exception as e:

@@ -7,7 +7,7 @@ from strats import (
     adx_ema,
     adx_ema,
     adx_test,
-    adx_test1,
+    adx_testone,
     adx_ema_sl,
 )
 
@@ -130,7 +130,7 @@ def adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
 
 def adx_test_bot1(stock_symbol, one_pip, api_key, oanda_stock_symbol):
-    adx_test1.adx_test_bot1(stock_symbol, one_pip, api_key, oanda_stock_symbol)
+    adx_testone.adx_test_bot1(stock_symbol, one_pip, api_key, oanda_stock_symbol)
 
 
 def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):

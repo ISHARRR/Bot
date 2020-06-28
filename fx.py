@@ -37,7 +37,7 @@ def adx_test():
     bot.adx_test_bot('EURUSD', 0.0001, 'ARA2JDHJFGRI89VB', 'EUR_USD')
 
 
-def adx_test1():
+def adx_testone():
     bot.adx_test_bot1('EURUSD', 0.0001, 'ARA2JDHJFGRI89VB', 'EUR_USD')
 
 
