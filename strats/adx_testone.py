@@ -141,9 +141,13 @@ def adx_test_bot1(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                             break
 
                     except Exception as e:
-                        bot.exception_alert(e)
-                        bot.email('TEST BOT: EXCEPTION ERROR -', 'INNER LOOP', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
-                        time.sleep(random.randint(60, 150))
+                        if str(e) == "'EMA'":
+                            pass
+                        else:
+                            bot.exception_alert(e)
+                            bot.email('TEST BOT: EXCEPTION', 'ERROR',
+                                      (str(traceback.format_exc()) + '\n' + str(e)), 'private')
+                            time.sleep(random.randint(60, 150))
 
                     time.sleep(240)
 
@@ -240,17 +244,23 @@ def adx_test_bot1(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                             break
 
                     except Exception as e:
-                        bot.exception_alert(e)
-                        bot.email('TEST BOT: EXCEPTION ERROR -', 'INNER LOOP',
-                                  (str(traceback.format_exc()) + '\n' + str(e)), 'private')
-                        time.sleep(random.randint(60, 150))
+                        if str(e) == "'EMA'":
+                            pass
+                        else:
+                            bot.exception_alert(e)
+                            bot.email('TEST BOT: EXCEPTION', 'ERROR',
+                                      (str(traceback.format_exc()) + '\n' + str(e)), 'private')
+                            time.sleep(random.randint(60, 150))
 
                     time.sleep(240)
 
         except Exception as e:
-            bot.exception_alert(e)
-            bot.email('TEST BOT: EXCEPTION', 'ERROR',
-                      (str(traceback.format_exc()) + '\n' + str(e)), 'private')
-            time.sleep(random.randint(60, 150))
+            if str(e) == "'EMA'":
+                pass
+            else:
+                bot.exception_alert(e)
+                bot.email('TEST BOT: EXCEPTION', 'ERROR',
+                          (str(traceback.format_exc()) + '\n' + str(e)), 'private')
+                time.sleep(random.randint(60, 150))
 
         time.sleep(300)

@@ -249,9 +249,13 @@ def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                     time.sleep(240)
 
         except Exception as e:
-            bot.exception_alert(e)
-            bot.email('TEST BOT: EXCEPTION', 'ERROR',
-                      (str(traceback.format_exc()) + '\n' + str(e)), 'private')
-            time.sleep(random.randint(60, 150))
+
+            if str(e) == "'EMA'":
+                pass
+            else:
+                bot.exception_alert(e)
+                bot.email('TEST BOT: EXCEPTION', 'ERROR',
+                          (str(traceback.format_exc()) + '\n' + str(e)), 'private')
+                time.sleep(random.randint(60, 150))
 
         time.sleep(300)
