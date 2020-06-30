@@ -16,8 +16,8 @@ def basic_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     ts = oanda.Oanda('101-004-14591208-003', oanda_stock_symbol, one_pip, 0.95, 'FAKE')
     # tpts = oanda.Oanda('101-004-14591208-004', oanda_stock_symbol, one_pip, 0.95)
 
-    fast_ema = 600
-    slow_ema = 1500
+    fast_ema = 20
+    slow_ema = 50
 
     sma_period = 200
 

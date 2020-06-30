@@ -27,27 +27,28 @@ def inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order
                 buy_id, sell_id = bot.trade_ids(id, direction)
                 if ((current_ema_fast, current_operator ,current_ema_slow) and (previous_ema_fast, previous_operator ,previous_ema_slow)):  # SELL
                     if buyorsell == 'BUY':
-                        if buy_id != 0:
-                            oa.close_order(buy_id)
-                            print('Trade ID:', buy_id,'Status: CLOSED' + '\n')
-                            bot.email('Order Closed - test', str(buy_id),'Check if order has been closed', 'private')
-                    elif buyorsell == 'SELL':
                         if sell_id != 0:
                             oa.close_order(sell_id)
                             print('Trade ID:', sell_id,'Status: CLOSED' + '\n')
-                            bot.email('Order Closed - test', str(sell_id),'Check if order has been closed', 'private')
+                            bot.email('Order Closed - test inner', str(sell_id),'Check if order has been closed', 'private')
+                    elif buyorsell == 'SELL':
+                        if buy_id != 0:
+                            oa.close_order(buy_id)
+                            print('Trade ID:', buy_id,'Status: CLOSED' + '\n')
+                            bot.email('Order Closed - test inner', str(buy_id),'Check if order has been closed', 'private')
+
 
             if ((current_ema_fast, current_operator ,current_ema_slow) and (previous_ema_fast, previous_operator ,previous_ema_slow) and (current_adx >= 25)):  # SELL
                 if buyorsell == 'BUY':
                     bot.trade_msg(stock_symbol, buyorsell)
                     bot.email('BUY - Strong ADX inner', stock_symbol, email_message, 'private')
                     if oa.get_open_trade_count() < 1:
-                        oa.create_order(order_params, 'BUY', tp=0.1, sl=0, ts=0.1)
+                        oa.create_order(order_params, 'BUY', tp=0, sl=0, ts=0.1)
                 elif buyorsell == 'SELL':
                     bot.trade_msg(stock_symbol, buyorsell)
                     bot.email('SELL - Strong ADX inner', stock_symbol, email_message, 'private')
                     if oa.get_open_trade_count() < 1:
-                        oa.create_order(order_params, 'SELL', tp=0.1, sl=0, ts=0.1)
+                        oa.create_order(order_params, 'SELL', tp=0, sl=0, ts=0.1)
 
                 break
 
@@ -56,12 +57,12 @@ def inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order
                     bot.trade_msg(stock_symbol, buyorsell)
                     bot.email('BUY - Weak ADX inner', stock_symbol, email_message, 'private')
                     if oa.get_open_trade_count() < 1:
-                        oa.create_order(order_params, 'BUY', tp=0.1, sl=0, ts=0.05)
+                        oa.create_order(order_params, 'BUY', tp=0, sl=0, ts=0.05)
                 elif buyorsell == 'SELL':
                     bot.trade_msg(stock_symbol, buyorsell)
                     bot.email('SELL - Weak ADX inner', stock_symbol, email_message, 'private')
                     if oa.get_open_trade_count() < 1:
-                        oa.create_order(order_params, 'SELL', tp=0.1, sl=0, ts=0.05)
+                        oa.create_order(order_params, 'SELL', tp=0, sl=0, ts=0.05)
 
                 break
 
@@ -72,7 +73,7 @@ def inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order
         time.sleep(inner_sleep)
 
 
-def open_order(stock_symbol, order_params, oa, buyorsell, buyorsell_id, strongorweak):
+def open_order(stock_symbol, order_params, oa, email_message, buyorsell, buyorsell_id, strongorweak):
     bot.trade_msg(stock_symbol, buyorsell)
     if bot.order_params(order_params):
         if buyorsell_id != 0:
@@ -82,9 +83,11 @@ def open_order(stock_symbol, order_params, oa, buyorsell, buyorsell_id, strongor
 
     if oa.get_open_trade_count() < 1:
         if strongorweak == 'STRONG':
-            oa.create_order(order_params, buyorsell, tp=0.1, sl=0, ts=0.1)
+            bot.email('SELL - Strong ADX', stock_symbol, email_message, 'private')
+            oa.create_order(order_params, buyorsell, tp=0, sl=0, ts=0.1)
         elif strongorweak == 'WEAK':
-            oa.create_order(order_params, buyorsell, tp=0.1, sl=0, ts=0.05)
+            bot.email('SELL - Weak ADX', stock_symbol, email_message, 'private')
+            oa.create_order(order_params, buyorsell, tp=0, sl=0, ts=0.05)
 
 
 
@@ -112,35 +115,26 @@ def adx_test_bot1(stock_symbol, one_pip, api_key, oanda_stock_symbol):
             current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.double_ema(
                 stock_symbol, api_key, fast_ema, slow_ema)
 
-            email_message = 'ADX Crossover Strategy with TS - test 1 take profit'
+            email_message = 'ADX Crossover Strategy with TS'
 
             if bot.order_params(order_params):
                 id, direction = oa.get_open_trade()
                 buy_id, sell_id = bot.trade_ids(id, direction)
 
             if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_adx >=25)):  # BUY
-                # email('BUY', stock_symbol, email_message)
-                bot.email('BUY - Strong ADX', stock_symbol, email_message, 'private')
-                open_order(stock_symbol, order_params, oa, 'BUY', sell_id, 'STRONG')
+                open_order(stock_symbol, order_params, oa, email_message, 'BUY', sell_id, 'STRONG')
                 # WhILE LOOP
                 inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order_params, email_message, 'SELL', operator.lt, operator.ge)
             elif ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_adx < 25)):  # BUY
-                # email('BUY', stock_symbol, email_message)
-                bot.email('BUY - Weak ADX', stock_symbol, email_message, 'private')
-                open_order(stock_symbol, order_params, oa, 'BUY', sell_id, 'WEAK')
+                open_order(stock_symbol, order_params, oa, email_message, 'BUY', sell_id, 'WEAK')
                 # WhILE LOOP
                 inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order_params, email_message, 'SELL', operator.lt, operator.ge)
-
-            if ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_adx >=25)):  # SELL
-                # email('SELL', stock_symbol, email_message)
-                bot.email('SELL - Strong ADX', stock_symbol, email_message, 'private')
-                open_order(stock_symbol, order_params, oa, 'SELL', buy_id, 'STRONG')
+            elif ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_adx >=25)):  # SELL
+                open_order(stock_symbol, order_params, oa, email_message, 'SELL', buy_id, 'STRONG')
                 # WhILE LOOP
                 inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order_params, email_message, 'BUY', operator.gt, operator.le)
             elif ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_adx < 25)):   # SELL
-                # email('SELL', stock_symbol, email_message)
-                bot.email('SELL - Weak ADX', stock_symbol, email_message, 'private')
-                open_order(stock_symbol, order_params, oa, 'SELL', buy_id, 'WEAK')
+                open_order(stock_symbol, order_params, oa, email_message, 'SELL', buy_id, 'WEAK')
                 # WhILE LOOP
                 inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order_params, email_message, 'BUY', operator.gt, operator.le)
 

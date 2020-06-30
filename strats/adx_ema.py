@@ -21,8 +21,8 @@ def adx_crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     oa = oanda.Oanda(account, oanda_stock_symbol, one_pip, 0.95, 'FAKE')
     database = 'trades_database/adx_crossDB'
 
-    fast_ema = 600
-    slow_ema = 1500
+    fast_ema = 20
+    slow_ema = 50
 
     order_params = 'CROSS'
 

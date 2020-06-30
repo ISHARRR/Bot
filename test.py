@@ -1,33 +1,19 @@
+import operator
 
-from indicators import (
-    ema_sma,
-    adx,
+def trade_ids(operator):
+    if (10,operator, 5):
+        print ('10 is bigger')
+    if (10 ,operator, 5):
+        buy_id = 100
+        print ('10 is smaller')
 
-)
-from trades_database import db
+    print(buy_id)
+    if 10 > 5:
+        print(buy_id)
+        buy_id = 1000
+        print(buy_id)
 
-
-import bot
-import oanda
-import time
-import random
-import traceback
-
-
-def adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
-    bot.running_msg(stock_symbol)
-
-    account = '101-004-14591208-008'
-
-    oa = oanda.Oanda(account, oanda_stock_symbol, one_pip, 0.95, 'FAKE')
-    # database = 'trades_database/adx_testDB'
-    oa.create_order('CROSS', 'BUY', tp=0, sl=0.1, ts=0)
-
-adx_test_bot('EURUSD', 0.0001, 'AGB2JDHJFGRI89VB', 'EUR_USD')
-
-
-
-
+trade_ids(operator.gt)
 
 # from alpha_vantage.techindicators import TechIndicators
 # import oanda

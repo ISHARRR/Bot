@@ -27,8 +27,8 @@ def crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     buy_id = db.getDB('BUY', databacse)
     sell_id = db.getDB('SELL', database)
 
-    fast_ema = 600
-    slow_ema = 1500
+    fast_ema = 20
+    slow_ema = 50
 
     while True:
         try:

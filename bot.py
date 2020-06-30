@@ -20,6 +20,8 @@ import recipients
 import smtplib
 import os
 import traceback
+import time
+import random
 
 
 def timezone(zone):
@@ -84,22 +86,22 @@ def order_params(param):
         return False
 
 
+def exception(e):
+    exception_alert(e)
+    email('TEST BOT: EXCEPTION', 'ERROR', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
+    time.sleep(random.randint(60, 150))
 
-def get_trade( ):
 
+def trade_ids(id, direction):
     buy_id = 0
     sell_id = 0
 
     if direction == 'LONG':
         buy_id = id
-    elif direction == 0:
-        buy_id
-
-    if direction == 'SHORT':
+    elif direction == 'SHORT':
         sell_id = id
-    elif direction == 0:
-        sell_id
 
+    return buy_id, sell_id
 
 
 # active bots
