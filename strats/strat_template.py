@@ -25,7 +25,7 @@ def inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order
             if bot.order_params(order_params):
                 id, direction = oa.get_open_trade()
                 buy_id, sell_id = bot.trade_ids(id, direction)
-                if ((current_ema_fast, current_operator ,current_ema_slow) and (previous_ema_fast, previous_operator ,previous_ema_slow)):  # SELL
+                if ((current_operator(current_ema_fast, current_ema_slow)) and (previous_operator(previous_ema_fast, previous_ema_slow))):  # SELL
                     if buyorsell == 'BUY':
                         if sell_id != 0:
                             oa.close_order(sell_id)
@@ -38,7 +38,7 @@ def inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order
                             bot.email('Order Closed - test inner', str(buy_id),'Check if order has been closed', 'private')
 
 
-            if ((current_ema_fast, current_operator ,current_ema_slow) and (previous_ema_fast, previous_operator ,previous_ema_slow) and (current_adx >= 25)):  # SELL
+            if ((current_operator(current_ema_fast, current_ema_slow)) and (previous_operator(previous_ema_fast, previous_ema_slow)) and (current_adx >= 25)):  # SELL
                 if buyorsell == 'BUY':
                     bot.trade_msg(stock_symbol, buyorsell)
                     bot.email('BUY - Strong ADX inner', stock_symbol, email_message, 'private')
@@ -52,7 +52,7 @@ def inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order
 
                 break
 
-            elif ((current_ema_fast, current_operator ,current_ema_slow) and (previous_ema_fast, previous_operator ,previous_ema_slow) and (current_adx < 25)):  # sell
+            elif ((current_operator(current_ema_fast, current_ema_slow)) and (previous_operator(previous_ema_fast, previous_ema_slow)) and (current_adx < 25)):  # sell
                 if buyorsell == 'BUY':
                     bot.trade_msg(stock_symbol, buyorsell)
                     bot.email('BUY - Weak ADX inner', stock_symbol, email_message, 'private')
@@ -91,11 +91,11 @@ def open_order(stock_symbol, order_params, oa, email_message, buyorsell, buyorse
 
 
 
-def adx_test_bot1(stock_symbol, one_pip, api_key, oanda_stock_symbol):
+def adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     bot.running_msg(stock_symbol)
 
     # account = '001-004-4069941-004'
-    account = '101-004-14591208-007'
+    account = '101-004-14591208-008'
 
     # oa = oanda.Oanda(account, oanda_stock_symbol, one_pip, 0.95, 'REAL')
     oa = oanda.Oanda(account, oanda_stock_symbol, one_pip, 0.95, 'FAKE')
@@ -125,14 +125,17 @@ def adx_test_bot1(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                 open_order(stock_symbol, order_params, oa, email_message, 'BUY', sell_id, 'STRONG')
                 # WhILE LOOP
                 inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order_params, email_message, 'SELL', operator.lt, operator.ge)
+
             elif ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_adx < 25)):  # BUY
                 open_order(stock_symbol, order_params, oa, email_message, 'BUY', sell_id, 'WEAK')
                 # WhILE LOOP
                 inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order_params, email_message, 'SELL', operator.lt, operator.ge)
+
             elif ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_adx >=25)):  # SELL
                 open_order(stock_symbol, order_params, oa, email_message, 'SELL', buy_id, 'STRONG')
                 # WhILE LOOP
                 inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order_params, email_message, 'BUY', operator.gt, operator.le)
+
             elif ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_adx < 25)):   # SELL
                 open_order(stock_symbol, order_params, oa, email_message, 'SELL', buy_id, 'WEAK')
                 # WhILE LOOP

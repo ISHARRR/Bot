@@ -1,19 +1,14 @@
-import operator
+from operator import gt, lt
 
 def trade_ids(operator):
-    if (10,operator, 5):
-        print ('10 is bigger')
-    if (10 ,operator, 5):
-        buy_id = 100
-        print ('10 is smaller')
+    if operator(10, 5):
+        print ('a is bigger b')
+    else:
+        print ('a is smaller b')
 
-    print(buy_id)
-    if 10 > 5:
-        print(buy_id)
-        buy_id = 1000
-        print(buy_id)
 
-trade_ids(operator.gt)
+
+trade_ids(lt)
 
 # from alpha_vantage.techindicators import TechIndicators
 # import oanda

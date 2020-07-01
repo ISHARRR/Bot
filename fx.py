@@ -5,15 +5,15 @@ import bot
 
 
 def eurusd():
-    bot.basic_bot('EURUSD', 0.0001, '4OKNDHHTQH2CFWZ9', 'EUR_USD')
+    bot.adx_ema_sl_bot('EURUSD', 0.0001, '4OKNDHHTQH2CFWZ9', 'EUR_USD')
 
 
 def gbpusd():
-    bot.basic_bot('GBPUSD', 0.0001, 'T7NT8GKR7CJ36U3C', 'GBP_USD')
+    bot.adx_ema_sl_bot('GBPUSD', 0.0001, 'T7NT8GKR7CJ36U3C', 'GBP_USD')
 
 
 def gbpjpy():
-    bot.basic_bot('GBPJPY', 0.01, 'ARA2JDHJFGRI89VB', 'GBP_JPY')
+    bot.adx_ema_sl_bot('GBPJPY', 0.01, 'ARA2JDHJFGRI89VB', 'GBP_JPY')
 
 
 # def eurusd_macd():
@@ -38,7 +38,7 @@ def adx_test():
 
 
 def adx_testone():
-    bot.adx_test_bot1('EURUSD', 0.0001, 'ARA2JDHJFGRI89VB', 'EUR_USD')
+    bot.adx_test_bot1('EURUSD', 0.0001, 'ARA3JDHJFGRI89VB', 'EUR_USD')
 
 
 def adx_ts():

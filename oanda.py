@@ -235,82 +235,82 @@ class Oanda:
         RISK_PERCENTAGE = self.risk_percentage
         OPEN_TRADE_COUNT = self.get_open_trade_count()
 
-        if (RISK_PERCENTAGE >= 0.5) and (OPEN_TRADE_COUNT >= 1):
-            pass
+        # if (RISK_PERCENTAGE >= 0.5) and (OPEN_TRADE_COUNT >= 1):
+        #     pass
+        # else:
+        if order_type == 'ALL':
+            # The orderspecs
+            mktOrder = MarketOrderRequest(
+                instrument=self.instrument,
+                units=UNIT_AMOUNT,
+                takeProfitOnFill=TakeProfitDetails(
+                    price=TAKE_PROFIT_PRICE).data,
+                stopLossOnFill=StopLossDetails(price=STOP_LOSS_PRICE).data,
+                trailingStopLossOnFill=TrailingStopLossDetails(
+                    distance=TRAILING_STOP_DISTANCE).data,
+            )
+        elif order_type == 'TPSL':
+            mktOrder = MarketOrderRequest(
+                instrument=self.instrument,
+                units=UNIT_AMOUNT,
+                takeProfitOnFill=TakeProfitDetails(
+                    price=TAKE_PROFIT_PRICE).data,
+                stopLossOnFill=StopLossDetails(price=STOP_LOSS_PRICE).data,
+            )
+        elif order_type == 'TPTS':
+            mktOrder = MarketOrderRequest(
+                instrument=self.instrument,
+                units=UNIT_AMOUNT,
+                takeProfitOnFill=TakeProfitDetails(
+                    price=TAKE_PROFIT_PRICE).data,
+                trailingStopLossOnFill=TrailingStopLossDetails(
+                    distance=TRAILING_STOP_DISTANCE).data,
+            )
+        elif order_type == 'TS':
+            mktOrder = MarketOrderRequest(
+                instrument=self.instrument,
+                units=UNIT_AMOUNT,
+                trailingStopLossOnFill=TrailingStopLossDetails(
+                    distance=TRAILING_STOP_DISTANCE).data,
+            )
+        elif order_type == 'SL':
+            mktOrder = MarketOrderRequest(
+                instrument=self.instrument,
+                units=UNIT_AMOUNT,
+                stopLossOnFill=StopLossDetails(price=STOP_LOSS_PRICE).data,
+            )
+        elif order_type == 'CROSS':
+            mktOrder = MarketOrderRequest(
+                instrument=self.instrument,
+                units=UNIT_AMOUNT,
+            )
+        # print("Market Order specs: \n{}".format(json.dumps(mktOrder.data, indent=4)))
+        # create the OrderCreate request
+        r = orders.OrderCreate(self.accountID, data=mktOrder.data)
+        try:
+            # send the OrderCreate request
+            rv = self.api.request(r)
+        except oandapyV20.exceptions.V20Error as err:
+            print(r.status_code, err)
         else:
-            if order_type == 'ALL':
-                # The orderspecs
-                mktOrder = MarketOrderRequest(
-                    instrument=self.instrument,
-                    units=UNIT_AMOUNT,
-                    takeProfitOnFill=TakeProfitDetails(
-                        price=TAKE_PROFIT_PRICE).data,
-                    stopLossOnFill=StopLossDetails(price=STOP_LOSS_PRICE).data,
-                    trailingStopLossOnFill=TrailingStopLossDetails(
-                        distance=TRAILING_STOP_DISTANCE).data,
-                )
-            elif order_type == 'TPSL':
-                mktOrder = MarketOrderRequest(
-                    instrument=self.instrument,
-                    units=UNIT_AMOUNT,
-                    takeProfitOnFill=TakeProfitDetails(
-                        price=TAKE_PROFIT_PRICE).data,
-                    stopLossOnFill=StopLossDetails(price=STOP_LOSS_PRICE).data,
-                )
-            elif order_type == 'TPTS':
-                mktOrder = MarketOrderRequest(
-                    instrument=self.instrument,
-                    units=UNIT_AMOUNT,
-                    takeProfitOnFill=TakeProfitDetails(
-                        price=TAKE_PROFIT_PRICE).data,
-                    trailingStopLossOnFill=TrailingStopLossDetails(
-                        distance=TRAILING_STOP_DISTANCE).data,
-                )
-            elif order_type == 'TS':
-                mktOrder = MarketOrderRequest(
-                    instrument=self.instrument,
-                    units=UNIT_AMOUNT,
-                    trailingStopLossOnFill=TrailingStopLossDetails(
-                        distance=TRAILING_STOP_DISTANCE).data,
-                )
-            elif order_type == 'SL':
-                mktOrder = MarketOrderRequest(
-                    instrument=self.instrument,
-                    units=UNIT_AMOUNT,
-                    stopLossOnFill=StopLossDetails(price=STOP_LOSS_PRICE).data,
-                )
-            elif order_type == 'CROSS':
-                mktOrder = MarketOrderRequest(
-                    instrument=self.instrument,
-                    units=UNIT_AMOUNT,
-                )
-            # print("Market Order specs: \n{}".format(json.dumps(mktOrder.data, indent=4)))
-            # create the OrderCreate request
-            r = orders.OrderCreate(self.accountID, data=mktOrder.data)
+            # print(json.dumps(rv, indent=2))
             try:
-                # send the OrderCreate request
-                rv = self.api.request(r)
-            except oandapyV20.exceptions.V20Error as err:
-                print(r.status_code, err)
-            else:
-                # print(json.dumps(rv, indent=2))
-                try:
-                    data = DataFrame.from_dict(
-                        rv['orderCancelTransaction'], orient='index')
-                    status = data.loc['type', 0]
-                    reason = data.loc['reason', 0]
-                    id = data.loc['id', 0]
-                    print('Order status:', status + '\n' +
-                          'Reason:', reason + '\n' + 'Trade ID:', id)
-                except KeyError:
-                    # KeyError to determin catch error raised by json return of 'orderCancelTransaction' instead of 'orderFillTransaction'
-                    data = DataFrame.from_dict(
-                        rv['orderFillTransaction'], orient='index')
-                    status = data.loc['type', 0]
-                    id = data.loc['id', 0]
-                    print('Order status:', status + '\n' + 'Trade ID:', id)
+                data = DataFrame.from_dict(
+                    rv['orderCancelTransaction'], orient='index')
+                status = data.loc['type', 0]
+                reason = data.loc['reason', 0]
+                id = data.loc['id', 0]
+                print('Order status:', status + '\n' +
+                      'Reason:', reason + '\n' + 'Trade ID:', id)
+            except KeyError:
+                # KeyError to determin catch error raised by json return of 'orderCancelTransaction' instead of 'orderFillTransaction'
+                data = DataFrame.from_dict(
+                    rv['orderFillTransaction'], orient='index')
+                status = data.loc['type', 0]
+                id = data.loc['id', 0]
+                print('Order status:', status + '\n' + 'Trade ID:', id)
 
-                    return id
+                return id
 
     # close order
     def close_order(self, id):
