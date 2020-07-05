@@ -103,7 +103,7 @@ def macd_graph(stock_symbol, api_key):
     data_macd, meta_data_ema = ti.get_macd(
         symbol=stock_symbol,
         series_type='close',
-        interval='5min',
+        interval='30min',
         fastperiod=12,
         slowperiod=26,
         signalperiod=9
@@ -121,9 +121,10 @@ def main():
     # 2
     # sma_graph('EURUSD', 'E47X6GN73CIDKMOW')
     # 3
-    ema_graph('EURUSD', 'AGB2JDHJFGRI89VB')
+    # ema_graph('EURUSD', 'AGB2JDHJFGRI89VB')
     # 4
     # adx_graph('GBPJPY', '60I75BKCK0OFGNKA')
-    #
+    # 5
+    macd_graph('EURUSD', '60I75AKCK0OFGNKA')
 
 main()

@@ -7,7 +7,6 @@ from strats import (
     adx_ema,
     adx_ema,
     adx_test,
-    adx_testone,
     adx_ema_sl,
 )
 
@@ -87,9 +86,14 @@ def order_params(param):
 
 
 def exception(e):
-    exception_alert(e)
-    email('TEST BOT: EXCEPTION', 'ERROR', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
-    time.sleep(random.randint(60, 150))
+    if str(e) == "Expecting value: line 1 column 1 (char 0)":
+        pass
+    elif str(e) == "('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))":
+        pass
+    else:
+        exception_alert(e)
+        email('TEST BOT: EXCEPTION', 'ERROR', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
+        time.sleep(random.randint(60, 150))
 
 
 def trade_ids(id, direction):
@@ -129,10 +133,6 @@ def adx_crossover_ts_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
 def adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     adx_test.adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol)
-
-
-def adx_test_bot1(stock_symbol, one_pip, api_key, oanda_stock_symbol):
-    adx_testone.adx_test_bot1(stock_symbol, one_pip, api_key, oanda_stock_symbol)
 
 
 def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):

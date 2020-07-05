@@ -8,24 +8,14 @@ def ema(stock_symbol, api_key, period):
     period = period
 
     # ema
-    if period > 1000:
-        data_ema, meta_data_ema = ti.get_ema(
-            symbol=stock_symbol,
-            interval='5min',
-            time_period=(int(period/5)),
-            )
-        # getting the second most current value aka the n-1
-        previous_ema = data_ema['EMA'].iloc[-14]
 
-    else:
-        data_ema, meta_data_ema = ti.get_ema(
-            symbol=stock_symbol,
-            interval='1min',
-            time_period=period,
-            )
-        # getting the second most current value aka the n-1
-        previous_ema = data_ema['EMA'].iloc[-61]
-
+    data_ema, meta_data_ema = ti.get_ema(
+        symbol=stock_symbol,
+        interval='30min',
+        time_period=period,
+        )
+    getting the second most current value aka the n-1
+    previous_ema = data_ema['EMA'].iloc[-1]
     # getting the most current value aka the n (tail)current_ema
     current_ema = data_ema['EMA'].iloc[-1]
 
@@ -57,8 +47,8 @@ def double_ema(stock_symbol, api_key, fast, slow):
     current_ema_fast = data_ema_fast['EMA'].iloc[-1]
     current_ema_slow = data_ema_slow['EMA'].iloc[-1]
     # getting the second most current value aka the n-1
-    previous_ema_slow = data_ema_slow['EMA'].iloc[-3]
-    previous_ema_fast = data_ema_fast['EMA'].iloc[-3]
+    previous_ema_slow = data_ema_slow['EMA'].iloc[-2]
+    previous_ema_fast = data_ema_fast['EMA'].iloc[-2]
 
     return current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow
 

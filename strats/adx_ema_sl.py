@@ -39,16 +39,10 @@ def inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order
 
 
             if ((current_operator(current_ema_fast, current_ema_slow)) and (previous_operator(previous_ema_fast, previous_ema_slow)) and (current_adx >= 25)):  # SELL
-                if buyorsell == 'BUY':
-                    bot.trade_msg(stock_symbol, buyorsell)
-                    bot.email('BUY - ', stock_symbol, email_message, 'private')
-                    if oa.get_open_trade_count() < 1:
-                        oa.create_order(order_params, 'BUY', tp=0.1, sl=0, ts=0.05)
-                elif buyorsell == 'SELL':
-                    bot.trade_msg(stock_symbol, buyorsell)
-                    bot.email('SELL - ', stock_symbol, email_message, 'private')
-                    if oa.get_open_trade_count() < 1:
-                        oa.create_order(order_params, 'SELL', tp=0.1, sl=0, ts=0.05)
+                bot.trade_msg(stock_symbol, buyorsell)
+                bot.email(buyorsell + ' -', stock_symbol, email_message, 'private')
+                if oa.get_open_trade_count() < 1:
+                    oa.create_order(order_params, buyorsell, tp=0.1, sl=0, ts=0.05)
 
                 break
 
@@ -72,9 +66,8 @@ def open_order(stock_symbol, order_params, oa, email_message, buyorsell, buyorse
             bot.email('Order Closed', str(buyorsell_id), 'Check if order has been closed', 'private')
 
     if oa.get_open_trade_count() < 1:
-        bot.email('SELL - Strong ADX', stock_symbol, email_message, 'private')
+        bot.email(buyorsell + ' -', stock_symbol, email_message, 'private')
         oa.create_order(order_params, buyorsell, tp=0.1, sl=0, ts=0.05)
-
 
 
 def adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
