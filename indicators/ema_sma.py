@@ -14,7 +14,7 @@ def ema(stock_symbol, api_key, period):
         interval='30min',
         time_period=period,
         )
-    getting the second most current value aka the n-1
+    # getting the second most current value aka the n-1
     previous_ema = data_ema['EMA'].iloc[-1]
     # getting the most current value aka the n (tail)current_ema
     current_ema = data_ema['EMA'].iloc[-1]

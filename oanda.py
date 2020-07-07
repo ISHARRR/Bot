@@ -34,16 +34,17 @@ class Oanda:
 
         if self.realorfake == 'REAL':
             # account authenticator returing access_token - real account
-            self.token = "ce0451d5f8df4c5d1877def6182454d3-7ace0598d6e490baca7d8f89ccde2148"
+            self.token = "e84d432149ffdfa8ced7d52b864d7983-154be793312cd00759bef280e66b57c0"
             # api access key
-            self.client = oandapyV20.API(access_token=self.token, environment="live")
-            self.api = oandapyV20.API(access_token=self.token)
+            self.client = oandapyV20.API(access_token=(self.token), environment="live")
+            self.api = oandapyV20.API(access_token=(self.token), environment="live")
+
         elif self.realorfake == 'FAKE':
             # account authenticator returing access_token - practise account
             self.token = "ace07448fdbcddf1d24c76db4f654abd-0673bb236877d296d74b63fef2d9be08"
             # api access key
-            self.client = oandapyV20.API(access_token=self.token)
-            self.api = oandapyV20.API(access_token=self.token)
+            self.client = oandapyV20.API(access_token=(self.token))
+            self.api = oandapyV20.API(access_token=(self.token))
 
 
     # # api access key

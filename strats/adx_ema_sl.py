@@ -23,9 +23,9 @@ def inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order
                 stock_symbol, api_key, fast_ema, slow_ema)
 
             if bot.order_params(order_params):
-                id, direction = oa.get_open_trade()
-                buy_id, sell_id = bot.trade_ids(id, direction)
                 if ((current_operator(current_ema_fast, current_ema_slow)) and (previous_operator(previous_ema_fast, previous_ema_slow))):  # SELL
+                    id, direction = oa.get_open_trade()
+                    buy_id, sell_id = bot.trade_ids(id, direction)
                     if buyorsell == 'BUY':
                         if sell_id != 0:
                             oa.close_order(sell_id)
@@ -70,7 +70,7 @@ def open_order(stock_symbol, order_params, oa, email_message, buyorsell, buyorse
         oa.create_order(order_params, buyorsell, tp=0.1, sl=0, ts=0.05)
 
 
-def adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
+def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     bot.running_msg(stock_symbol)
 
     # real account
@@ -96,18 +96,21 @@ def adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
             current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.double_ema(
                 stock_symbol, api_key, fast_ema, slow_ema)
 
-            email_message = 'ADX Crossover Strategy with TS'
+            email_message = 'EMA Crossover Strategy with ADX'
 
-            if bot.order_params(order_params):
-                id, direction = oa.get_open_trade()
-                buy_id, sell_id = bot.trade_ids(id, direction)
 
             if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_adx >=25)):  # BUY
+                if bot.order_params(order_params):
+                    id, direction = oa.get_open_trade()
+                    buy_id, sell_id = bot.trade_ids(id, direction)
                 open_order(stock_symbol, order_params, oa, email_message, 'BUY', sell_id)
                 # WhILE LOOP
                 inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order_params, email_message, 'SELL', operator.lt, operator.ge)
 
             elif ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_adx >=25)):  # SELL
+                if bot.order_params(order_params):
+                    id, direction = oa.get_open_trade()
+                    buy_id, sell_id = bot.trade_ids(id, direction)
                 open_order(stock_symbol, order_params, oa, email_message, 'SELL', buy_id)
                 # WhILE LOOP
                 inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order_params, email_message, 'BUY', operator.gt, operator.le)
