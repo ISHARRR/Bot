@@ -8,6 +8,7 @@ from strats import (
     adx_ema,
     adx_test,
     adx_ema_sl,
+    ema_adx_wait,
 )
 
 
@@ -21,6 +22,7 @@ import os
 import traceback
 import time
 import random
+import schedule
 
 
 def timezone(zone):
@@ -86,14 +88,35 @@ def order_params(param):
 
 
 def exception(e):
+    freq_error = "Thank you for using Alpha Vantage! Our standard API call frequency is 5 calls per minute and 500 calls per day. Please visit https://www.alphavantage.co/premium/ if you would like to target a higher API call frequency."
+
     if str(e) == "Expecting value: line 1 column 1 (char 0)":
         pass
     elif str(e) == "('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))":
+        pass
+    elif str(e) == freq_error:
         pass
     else:
         exception_alert(e)
         email('TEST BOT: EXCEPTION', 'ERROR', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
         time.sleep(random.randint(60, 150))
+
+# def exception(e):
+#     freq_error = "Thank you for using Alpha Vantage! Our standard API call frequency is 5 calls per minute and 500 calls per day. Please visit https://www.alphavantage.co/premium/ if you would like to target a higher API call frequency."
+#
+#     if str(e) == "Expecting value: line 1 column 1 (char 0)":
+#         pass
+#     elif str(e) == "('Connection aborted.', ConnectionResetError(104, 'Connection reset by peer'))":
+#         pass
+#     elif str(e) == freq_error:
+#         count = count + 1
+#         mail = email('API Frequency', 'Error', freq_error + '\n' + 'Error occured ' + str(count) + ' times', 'private')
+#         schedule.every().Friday.at("24:00").do(mail)
+#         schedule.every().Friday.at("00:05").do()
+#     else:
+#         exception_alert(e)
+#         email('TEST BOT: EXCEPTION', 'ERROR', (str(traceback.format_exc()) + '\n' + str(e)), 'private')
+#         time.sleep(random.randint(60, 150))
 
 
 def trade_ids(id, direction):
@@ -137,3 +160,7 @@ def adx_test_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
 def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     adx_ema_sl.adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol)
+
+
+def test(stock_symbol, one_pip, api_key, oanda_stock_symbol):
+    ema_adx_wait.test(stock_symbol, one_pip, api_key, oanda_stock_symbol)

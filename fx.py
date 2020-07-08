@@ -51,3 +51,7 @@ def cross():
 
 def sma_cross():
     bot.sma_crossover_bot('EURUSD', 0.0001, 'U6V8MKZWYAU0J728', 'EUR_USD')
+
+
+def test():
+    bot.test('GBPJPY', 0.0001, 'U6V8MKZWYAU0J728', 'GBP_JPY')

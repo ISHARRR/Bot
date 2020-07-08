@@ -22,6 +22,7 @@ def get_ids(order_params):
 
 
 def inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order_params, email_message, buyorsell, current_operator, previous_operator):
+    t_end = time.time() + 60 * 61
     while True:
         time.sleep(60)
         try:
@@ -45,19 +46,21 @@ def inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order
                             bot.email('Order Closed - test inner', str(buy_id),'Check if order has been closed', 'private')
 
 
-            if ((current_operator(current_ema_fast, current_ema_slow)) and (previous_operator(previous_ema_fast, previous_ema_slow)) and (current_adx >= 25)):  # SELL
-                bot.trade_msg(stock_symbol, buyorsell)
-                bot.email(buyorsell + ' -', stock_symbol, email_message, 'private')
-                if oa.get_open_trade_count() < 1:
-                    oa.create_order(order_params, buyorsell, tp=0.1, sl=0, ts=0.05)
-
+            if ((current_operator(current_ema_fast, current_ema_slow)) and (previous_operator(previous_ema_fast, previous_ema_slow))):  # SELL
+                while time.time() < t_end:
+                    time.sleep(60)
+                    try:
+                        current_adx = adx.adx(stock_symbol, api_key)
+                        if current_adx >=25:
+                            bot.trade_msg(stock_symbol, buyorsell)
+                            bot.email(buyorsell + ' -', stock_symbol, email_message, 'private')
+                            if oa.get_open_trade_count() < 1:
+                                oa.create_order(order_params, buyorsell, tp=0.1, sl=0, ts=0.05)
+                            break
+                    except Exception as e:
+                        bot.exception(e)
+                    time.sleep(inner_sleep)
                 break
-
-            elif ((current_operator(current_ema_fast, current_ema_slow)) and (previous_operator(previous_ema_fast, previous_ema_slow)) and (current_adx < 25)):  # sell
-
-                break
-
-
         except Exception as e:
             bot.exception(e)
 
@@ -77,7 +80,7 @@ def open_order(stock_symbol, order_params, oa, email_message, buyorsell, buyorse
         oa.create_order(order_params, buyorsell, tp=0.1, sl=0, ts=0.05)
 
 
-def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
+def test(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     bot.running_msg(stock_symbol)
 
     # real account
@@ -96,28 +99,49 @@ def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
 
     order_params = 'TS'
 
+    t_end = time.time() + 60 * 61
+
 
     while True:
         try:
-            current_adx = adx.adx(stock_symbol, api_key)
             current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.double_ema(
                 stock_symbol, api_key, fast_ema, slow_ema)
 
             email_message = 'EMA Crossover Strategy with ADX'
 
 
-            if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_adx >=25)):  # BUY
-                buy_id, sell_id = get_ids(order_params)
-                open_order(stock_symbol, order_params, oa, email_message, 'BUY', sell_id)
-                # WhILE LOOP
-                inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order_params, email_message, 'SELL', operator.lt, operator.ge)
+            if (current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow):  # BUY
+                while time.time() < t_end:
+                    time.sleep(60)
+                    try:
+                        current_adx = adx.adx(stock_symbol, api_key)
+                        if current_adx >=25:
+                            buy_id, sell_id = get_ids(order_params)
+                            open_order(stock_symbol, order_params, oa, email_message, 'BUY', sell_id)
+                            # WhILE LOOP
+                            inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order_params, email_message, 'SELL', operator.lt, operator.ge)
+
+                    except Exception as e:
+                        bot.exception(e)
+
+                    time.sleep(inner_sleep)
+
 
             elif ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_adx >=25)):  # SELL
-                buy_id, sell_id = get_ids(order_params)
-                open_order(stock_symbol, order_params, oa, email_message, 'SELL', buy_id)
-                # WhILE LOOP
-                inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order_params, email_message, 'BUY', operator.gt, operator.le)
+                while time.time() < t_end:
+                    time.sleep(60)
+                    try:
+                        current_adx = adx.adx(stock_symbol, api_key)
+                        if current_adx >=25:
+                            buy_id, sell_id = get_ids(order_params)
+                            open_order(stock_symbol, order_params, oa, email_message, 'SELL', buy_id)
+                            # WhILE LOOP
+                            inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order_params, email_message, 'BUY', operator.gt, operator.le)
 
+                    except Exception as e:
+                        bot.exception(e)
+
+                    time.sleep(inner_sleep)
 
         except Exception as e:
             bot.exception(e)
