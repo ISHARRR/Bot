@@ -151,7 +151,8 @@ class Oanda:
 
         # unit_size = float(balance) * float(risk_percentage)
         unit_size = (float(balance) * float(leverage)) * float(risk_percentage)
-        unit_amount = float(unit_size) * float(current_price)
+        unit_amount = unit_size
+        # unit_amount = float(unit_size) * float(current_price)
 
         if buyorsell == 'SELL':
             unit_amount = unit_amount * - 1
@@ -225,7 +226,8 @@ class Oanda:
         # if trailing_stop_distance < 0.05:
         #     trailing_stop_distance = 0.05
         # =======================================================================================================
-        return take_profit_price, stop_loss_price, trailing_stop_distance,
+        print (take_profit_price, stop_loss_price, trailing_stop_distance, UNIT_AMOUNT)
+        return take_profit_price, stop_loss_price, trailing_stop_distance
 
     # order template
     def create_order(self, order_type, buyorsell, tp=0.1, sl=0.05, ts=0.05):

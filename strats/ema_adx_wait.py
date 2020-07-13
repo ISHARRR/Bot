@@ -14,7 +14,7 @@ import traceback
 import operator
 
 
-def get_ids(order_params):
+def get_ids(order_params, oa):
     if bot.order_params(order_params):
         id, direction = oa.get_open_trade()
         buy_id, sell_id = bot.trade_ids(id, direction)
@@ -84,12 +84,12 @@ def test(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     bot.running_msg(stock_symbol)
 
     # real account
-    account = '001-004-4069941-004'
+    # account = '001-004-4069941-004'
     # practise account
-    # account = '101-004-14591208-008'
+    account = '101-004-14591208-008'
 
-    oa = oanda.Oanda(account, oanda_stock_symbol, one_pip, 0.95, 'REAL')
-    # oa = oanda.Oanda(account, oanda_stock_symbol, one_pip, 0.95, 'FAKE')
+    # oa = oanda.Oanda(account, oanda_stock_symbol, one_pip, 0.95, 'REAL')
+    oa = oanda.Oanda(account, oanda_stock_symbol, one_pip, 0.95, 'FAKE')
 
     fast_ema = 21
     slow_ema = 55
@@ -116,7 +116,7 @@ def test(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                     try:
                         current_adx = adx.adx(stock_symbol, api_key)
                         if current_adx >=25:
-                            buy_id, sell_id = get_ids(order_params)
+                            buy_id, sell_id = get_ids(order_params, oa)
                             open_order(stock_symbol, order_params, oa, email_message, 'BUY', sell_id)
                             # WhILE LOOP
                             inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order_params, email_message, 'SELL', operator.lt, operator.ge)
@@ -127,13 +127,13 @@ def test(stock_symbol, one_pip, api_key, oanda_stock_symbol):
                     time.sleep(inner_sleep)
 
 
-            elif ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow) and (current_adx >=25)):  # SELL
+            elif ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow)):  # SELL
                 while time.time() < t_end:
                     time.sleep(60)
                     try:
                         current_adx = adx.adx(stock_symbol, api_key)
                         if current_adx >=25:
-                            buy_id, sell_id = get_ids(order_params)
+                            buy_id, sell_id = get_ids(order_params, oa)
                             open_order(stock_symbol, order_params, oa, email_message, 'SELL', buy_id)
                             # WhILE LOOP
                             inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order_params, email_message, 'BUY', operator.gt, operator.le)

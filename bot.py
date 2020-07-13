@@ -83,6 +83,8 @@ def order_params(param):
         return True
     elif param == 'TS':
         return True
+    elif param == 'TPTS':
+        return True
     else:
         return False
 
