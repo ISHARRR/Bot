@@ -1,5 +1,1 @@
-import bot
-
-while True:
-    bot.exception('test')
-    
+print (list(range(58,72)))

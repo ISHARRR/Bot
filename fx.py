@@ -29,6 +29,10 @@ def gbpjpy():
 # GMQ2WJ9QWT993MVD
 
 
+def fxstreet():
+    bot.fxstreet_bot('EURUSD', 0.0001, '4OKNDHHTQH2CFWZ9', 'EUR_USD')
+
+
 def adx_cross():
     bot.adx_crossover_bot('EURUSD', 0.0001, '4OKNDHHTQH2CFWZ9', 'EUR_USD')
 

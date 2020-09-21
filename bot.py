@@ -9,6 +9,7 @@ from strats import (
     adx_test,
     adx_ema_sl,
     ema_adx_wait,
+    fxstreet,
 )
 
 
@@ -138,6 +139,10 @@ def trade_ids(id, direction):
 
 def basic_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     basic.basic_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol)
+
+
+def fxstreet_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
+    fxstreet.adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol)
 
 
 def crossover_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):

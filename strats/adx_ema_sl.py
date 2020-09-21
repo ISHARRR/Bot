@@ -4,6 +4,7 @@ from indicators import (
 
 )
 from trades_database import db
+from datetime import datetime, time as t
 
 
 import bot
@@ -24,6 +25,9 @@ def get_ids(order_params, oa):
 def inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order_params, email_message, buyorsell, current_operator, previous_operator):
     while True:
         time.sleep(60)
+        current_time = datetime.now().time()
+        days = datetime.today().weekday()
+
         try:
             # current_adx = adx.adx(stock_symbol, api_key)
             current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.double_ema(
@@ -49,8 +53,9 @@ def inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order
             if ((current_operator(current_ema_fast, current_ema_slow)) and (previous_operator(previous_ema_fast, previous_ema_slow))):
                 bot.trade_msg(stock_symbol, buyorsell)
                 bot.email(buyorsell + ' -', stock_symbol, email_message)
-                if oa.get_open_trade_count() < 1:
-                    oa.create_order(order_params, buyorsell, tp=0.1, sl=0, ts=0.1)
+                if current_time >= t(00,00) and current_time <= t(12,00) and days == 0 and days ==1:
+                    if oa.get_open_trade_count() < 1:
+                        oa.create_order(order_params, buyorsell, tp=0.1, sl=0, ts=0.1)
 
                 break
 
@@ -66,6 +71,9 @@ def inner_loop(stock_symbol, api_key, inner_sleep, oa, fast_ema, slow_ema, order
 
 
 def open_order(stock_symbol, order_params, oa, email_message, buyorsell, buyorsell_id):
+    current_time = datetime.now().time()
+    days = datetime.today().weekday()
+
     bot.trade_msg(stock_symbol, buyorsell)
     if bot.order_params(order_params):
         if buyorsell_id != 0:
@@ -74,8 +82,9 @@ def open_order(stock_symbol, order_params, oa, email_message, buyorsell, buyorse
             bot.email('Order Closed', str(buyorsell_id), 'Check if order has been closed', 'private')
 
     bot.email(buyorsell + ' -', stock_symbol, email_message)
-    if oa.get_open_trade_count() < 1:
-        oa.create_order(order_params, buyorsell, tp=0.1, sl=0, ts=0.05)
+    if current_time >= t(00,00) and current_time <= t(12,00) and days == 0 and days ==1:
+        if oa.get_open_trade_count() < 1:
+            oa.create_order(order_params, buyorsell, tp=0.1, sl=0, ts=0.05)
 
 
 def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
@@ -95,7 +104,7 @@ def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     outer_sleep = 300
     inner_sleep = 240
 
-    order_params = 'TPTS'
+    order_params = 'CROSS'
 
 
     while True:
