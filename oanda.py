@@ -287,6 +287,11 @@ class Oanda:
                 instrument=self.instrument,
                 units=UNIT_AMOUNT,
             )
+        elif order_type == 'NONE':
+            mktOrder = MarketOrderRequest(
+                instrument=self.instrument,
+                units=UNIT_AMOUNT,
+            )
         # print("Market Order specs: \n{}".format(json.dumps(mktOrder.data, indent=4)))
         # create the OrderCreate request
         r = orders.OrderCreate(self.accountID, data=mktOrder.data)

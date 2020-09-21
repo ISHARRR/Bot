@@ -82,7 +82,7 @@ def open_order(stock_symbol, order_params, oa, email_message, buyorsell, buyorse
             bot.email('Order Closed', str(buyorsell_id), 'Check if order has been closed', 'private')
 
     bot.email(buyorsell + ' -', stock_symbol, email_message)
-    if current_time >= t(00,00) and current_time <= t(12,00) and days == 0 and days ==1:
+    if current_time >= t(00,00) and current_time <= t(12,00) and days == 0 or days ==1:
         if oa.get_open_trade_count() < 1:
             oa.create_order(order_params, buyorsell, tp=0.1, sl=0, ts=0.05)
 

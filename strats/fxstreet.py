@@ -38,7 +38,7 @@ def open_order(stock_symbol, order_params, oa, email_message, buyorsell, buyorse
             oa.create_order(order_params, buyorsell, tp=0, sl=0, ts=0)
 
 
-def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
+def fxstreet_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
     bot.running_msg(stock_symbol)
 
     # REAL ACCOUNT
@@ -66,10 +66,8 @@ def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
             current_ema_fast, current_ema_slow, previous_ema_fast, previous_ema_slow = ema_sma.double_ema(
                 stock_symbol, api_key, fast_ema, slow_ema)
 
-            email_message = 'EMA Crossover Strategy with ADX'
+            email_message = 'EMA Crossover Strategy with FX Street'
 
-
-            # if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow) and (current_adx >=25)): # BUY
             if ((current_ema_fast > current_ema_slow) and (previous_ema_fast <= previous_ema_slow)) and (fxstreet == 'BUY'): # BUY
                 buy_id, sell_id = get_ids(order_params, oa)
                 open_order(stock_symbol, order_params, oa, email_message, 'BUY', sell_id)
@@ -77,7 +75,6 @@ def adx_ema_sl_bot(stock_symbol, one_pip, api_key, oanda_stock_symbol):
             elif ((current_ema_fast < current_ema_slow) and (previous_ema_fast >= previous_ema_slow)) and (fxstreet == 'SELL'):  # SELL
                 buy_id, sell_id = get_ids(order_params, oa)
                 open_order(stock_symbol, order_params, oa, email_message, 'SELL', buy_id)
-
 
         except Exception as e:
             bot.exception(e)
